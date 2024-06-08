@@ -1,0 +1,146 @@
+'use client';
+
+import { Button } from '@/components/ui/button';
+import { z } from 'zod';
+import { useSignIn } from '@clerk/nextjs';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { errorCodes, generateErrorMessage } from '@/lib/errorCodes';
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'ادخل بريدك الالكتروني')
+    .email('هذا البريد غير صالح'),
+  password: z.string().min(1, 'ادخل كلمة المرور'),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
+const LoginPage = () => {
+  const { isLoaded, signIn, setActive } = useSignIn();
+  const [error, setError] = useState<string>();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  async function onSubmit(values: LoginFormData) {
+    if (!isLoaded) {
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    /**
+     * @todo: handle errors
+     * forgot password
+     * email not verified
+     */
+
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: values.email,
+        password: values.password,
+      });
+
+      if (signInAttempt.status === 'complete') {
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.push('/dashboard');
+      } else {
+        console.log('signInAttempt', signInAttempt);
+      }
+    } catch (error: any) {
+      setError(generateErrorMessage(error.errors[0].code));
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <>
+      <h1 className='text-2xl font-bold mb-4'>تسجيل الدخول</h1>
+      <p className='text-sm text-gray-500'>
+        الدخول إلى منصة سخاء يتيح لك بدء حملات تبرعات وتحديث نسبة الإنجاز
+        تلقائيًا.
+      </p>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className='mt-10 space-y-4'
+        >
+          <FormField
+            control={form.control}
+            name='email'
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    onFocus={() => setError('')}
+                    placeholder='البريد الإلكتروني'
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='password'
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    type='password'
+                    onFocus={() => setError('')}
+                    placeholder='كلمة المرور'
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {error && <FormMessage>{error}</FormMessage>}
+          <Button
+            type='submit'
+            className='w-full'
+            disabled={loading}
+            isLoading={loading}
+          >
+            تسجيل الدخول
+          </Button>
+          <p className='text-sm text-gray-500'>
+            ليس لديك حساب؟{' '}
+            <Link href='/register' className='underline underline-offset-2'>
+              أنشاء حساب جديد
+            </Link>
+          </p>
+        </form>
+      </Form>
+    </>
+  );
+};
+
+export default LoginPage;
