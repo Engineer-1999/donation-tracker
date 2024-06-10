@@ -39,7 +39,7 @@ type LoginFormProps = {
   setAuthenticating: (authenticating: boolean) => void;
 };
 
-const LoginForm = ({
+const RegisterForm = ({
   setVerifying,
   signUp,
   isLoaded,
@@ -89,8 +89,9 @@ const LoginForm = ({
             <FormItem>
               <FormControl>
                 <Input
+                  dir='ltr'
                   onFocus={() => setError('')}
-                  placeholder='البريد الإلكتروني'
+                  placeholder='name@example.com'
                   {...field}
                 />
               </FormControl>
@@ -105,9 +106,10 @@ const LoginForm = ({
             <FormItem>
               <FormControl>
                 <Input
+                  dir='ltr'
                   onFocus={() => setError('')}
                   type='password'
-                  placeholder='كلمة المرور'
+                  placeholder='Password'
                   {...field}
                 />
               </FormControl>
@@ -122,9 +124,10 @@ const LoginForm = ({
             <FormItem>
               <FormControl>
                 <Input
+                  dir='ltr'
                   onFocus={() => setError('')}
                   type='password'
-                  placeholder='تاكيد كلمة المرور'
+                  placeholder='Password Confirmation'
                   {...field}
                 />
               </FormControl>
@@ -152,4 +155,4 @@ const LoginForm = ({
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

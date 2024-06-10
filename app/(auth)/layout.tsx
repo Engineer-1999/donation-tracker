@@ -4,13 +4,13 @@ import { useAuth } from '@clerk/nextjs';
 import { useEffect } from 'react';
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
-  const { isSignedIn } = useAuth();
+  // const { isSignedIn } = useAuth();
 
-  useEffect(() => {
-    if (isSignedIn) {
-      window.location.href = '/dashboard';
-    }
-  }, [isSignedIn]);
+  // useEffect(() => {
+  //   if (isSignedIn) {
+  //     window.location.href = '/dashboard';
+  //   }
+  // }, [isSignedIn]);
 
   return (
     <main className='flex flex-col items-center justify-center h-screen bg-primary-50 px-4'>

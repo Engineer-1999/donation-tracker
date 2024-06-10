@@ -6,14 +6,11 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
-import Link from 'next/link';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useSignUp } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { generateErrorMessage } from '@/lib/errorCodes';
 
@@ -28,6 +25,7 @@ type VerifyingFormProps = {
   isLoaded: boolean;
   verefyinging: boolean;
   setVerefyinging: (verefyinging: boolean) => void;
+  setUserDetails: (userDetails: boolean) => void;
 };
 
 const VerifyingForm = ({
@@ -36,8 +34,8 @@ const VerifyingForm = ({
   isLoaded,
   verefyinging,
   setVerefyinging,
+  setUserDetails,
 }: VerifyingFormProps) => {
-  const router = useRouter();
   const [error, setError] = useState<string>();
 
   const form = useForm<VerifyingFormData>({
@@ -60,7 +58,7 @@ const VerifyingForm = ({
       if (completeSignUp?.status === 'complete') {
         if (setActive) {
           await setActive({ session: completeSignUp.createdSessionId });
-          router.push('/dashboard');
+          setUserDetails(true);
         }
       } else {
         console.log('completeSignUp', completeSignUp);
@@ -83,6 +81,7 @@ const VerifyingForm = ({
             <FormItem>
               <FormControl>
                 <Input
+                  dir='rtl'
                   onFocus={() => setError('')}
                   placeholder='رمز التاكيد'
                   {...field}

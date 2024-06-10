@@ -96,8 +96,9 @@ const LoginPage = () => {
               <FormItem>
                 <FormControl>
                   <Input
+                    dir='ltr'
                     onFocus={() => setError('')}
-                    placeholder='البريد الإلكتروني'
+                    placeholder='name@example.com'
                     {...field}
                   />
                 </FormControl>
@@ -112,9 +113,10 @@ const LoginPage = () => {
               <FormItem>
                 <FormControl>
                   <Input
+                    dir='ltr'
                     type='password'
                     onFocus={() => setError('')}
-                    placeholder='كلمة المرور'
+                    placeholder='Password'
                     {...field}
                   />
                 </FormControl>
