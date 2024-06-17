@@ -16,8 +16,8 @@ import {
 } from '@/components/ui/form';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { errorCodes, generateErrorMessage } from '@/lib/errorCodes';
+import { useState } from 'react';
+import { generateErrorMessage } from '@/lib/errorCodes';
 
 const loginSchema = z.object({
   email: z

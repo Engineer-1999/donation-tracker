@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 const HomePage = () => {
   useEffect(() => {
-    window.location.href = "/dashboard";
+    window.location.href = '/dashboard';
   }, []);
 
   return null;
