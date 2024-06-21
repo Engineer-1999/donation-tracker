@@ -1,0 +1,1 @@
+export const STORAGE_URL = 'https://sewnmanvgrtuwoymikax.supabase.co/storage/v1/object/public/images/';
