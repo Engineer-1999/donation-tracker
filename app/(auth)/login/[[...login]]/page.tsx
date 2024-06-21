@@ -1,12 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { z } from 'zod';
 import { useSignIn } from '@clerk/nextjs';
+import { z } from 'zod';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -14,10 +11,13 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { generateErrorMessage } from '@/lib/errorCodes';
+import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { generateErrorMessage } from '@/lib/errorCodes';
+import { useForm } from 'react-hook-form';
 
 const loginSchema = z.object({
   email: z

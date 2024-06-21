@@ -1,6 +1,6 @@
 'use client';
 
-import { Transaction } from '@/utils/supabase/schema';
+import { Transaction } from '@/lib/supabase/schema';
 import { ColumnDef } from '@tanstack/react-table';
 import DeleteTransactionButton from './deleteTransactionButton';
 

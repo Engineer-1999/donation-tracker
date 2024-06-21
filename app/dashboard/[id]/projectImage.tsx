@@ -1,12 +1,12 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { supabaseClient } from '@/utils/supabase/client';
+import { supabaseClient } from '@/lib/supabase/client';
+import { STORAGE_URL } from '@/lib/supabase/constants';
 import { CloudUploadIcon, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { ChangeEvent, RefObject, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ChangeEvent, useState } from 'react';
 import ChangeImageButton from './changeImageButton';
-import { STORAGE_URL } from '@/utils/supabase/constants';
 
 type ProjectImageProps = {
   name: string;
@@ -78,6 +78,7 @@ const FileInput = ({
   isLoading: boolean;
   setIsLoading: (value: boolean) => void;
 }) => {
+  const router = useRouter();
   const handleFileInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -105,6 +106,7 @@ const FileInput = ({
       return;
     }
 
+    router.refresh();
     setIsLoading(false);
     console.log(data);
   };

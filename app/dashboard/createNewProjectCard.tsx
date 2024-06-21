@@ -1,13 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { PlusIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { PlusIcon } from 'lucide-react';
 import NewProjectForm from './newProjectForm';
 
 const CreateNewProjectCard = () => {

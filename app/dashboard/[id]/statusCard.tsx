@@ -1,5 +1,3 @@
-import React from 'react';
-
 type StatusCardProps = {
   title: string;
   icon?: React.ReactNode;

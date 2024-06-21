@@ -1,23 +1,12 @@
+import { fetchProjectById } from '@/app/dashboard/[id]/actions';
 import { Progress } from '@/components/ui/progress';
-import { Project } from '@/utils/supabase/schema';
-import { createClerkSupabaseServerClient } from '@/utils/supabase/server';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import React from 'react';
 
 const PublishedProjectPage = async ({ params }: { params: { id: string } }) => {
-  const client = await createClerkSupabaseServerClient();
+  const { project, error } = await fetchProjectById(params.id);
 
-  const { data: project, error } = await client
-    .from('projects')
-    .select()
-    .match({
-      id: params.id,
-    })
-    .returns<Project[]>()
-    .single();
-
-  if (error) {
+  if (error || !project) {
     return notFound();
   }
 

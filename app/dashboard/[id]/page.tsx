@@ -1,21 +1,20 @@
-import { createClerkSupabaseServerClient } from '@/utils/supabase/server';
+import { formatCurrency, formatPercentage } from '@/lib/formatNumbers';
+import { CircleDot, CirclePlus, HandCoins } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { fetchProjectById, fetchTransactionsByProjectId } from './actions';
+import ProjectHeader from './header';
+import ProjectColor from './projectColor';
+import ProjectImage from './projectImage';
+import StatusCard from './statusCard';
 import AddTransactionForm from './transactions/addTransactionForm';
 import TransactionsTable from './transactions/transactionsTable';
-import ProjectImage from './projectImage';
-import ProjectHeader from './header';
-import StatusCard from './statusCard';
-import { formatCurrency, formatPercentage } from '@/utils/formatNumbers';
-import { CircleDot, CirclePlus, HandCoins } from 'lucide-react';
-import ProjectColor from './projectColor';
-import { fetchProjectById, fetchTransactionsByProjectId } from './actions';
 
 const page = async ({ params }: { params: { id: string } }) => {
   const { project, error: projectFetchingError } = await fetchProjectById(
     params.id,
   );
 
-  if (projectFetchingError) {
+  if (projectFetchingError || !project) {
     console.log(projectFetchingError);
     return notFound();
   }
@@ -32,17 +31,19 @@ const page = async ({ params }: { params: { id: string } }) => {
     {
       title: 'ما تم جمعه حتى الان',
       icon: <HandCoins className='h-5 w-5' />,
-      value: formatCurrency(project.progress),
+      value: formatCurrency(parseFloat(project.progress)),
     },
     {
       title: 'الهدف المراد جمعه',
       icon: <CirclePlus className='h-5 w-5' />,
-      value: formatCurrency(project.target_goal),
+      value: formatCurrency(parseFloat(project.target_goal)),
     },
     {
       title: 'نسبة الإنجاز',
       icon: <CircleDot className='h-5 w-5' />,
-      value: formatPercentage(project.progress / project.target_goal),
+      value: formatPercentage(
+        parseFloat(project.progress) / parseFloat(project.target_goal),
+      ),
     },
   ];
 

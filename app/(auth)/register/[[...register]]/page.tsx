@@ -4,8 +4,8 @@ import { useSignUp } from '@clerk/nextjs';
 
 import { useState } from 'react';
 import RegisterForm from './forms/registerForm';
-import VerifyingForm from './forms/verifyingForm';
 import UserDetailsForm from './forms/userDetailsForm';
+import VerifyingForm from './forms/verifyingForm';
 
 const RegisterPage = () => {
   const { isLoaded, signUp, setActive } = useSignUp();

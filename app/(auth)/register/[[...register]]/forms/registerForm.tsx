@@ -1,4 +1,4 @@
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -6,15 +6,14 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { useSignUp } from '@clerk/nextjs';
-import { useState } from 'react';
+import { Input } from '@/components/ui/input';
 import { generateErrorMessage } from '@/lib/errorCodes';
+import { useSignUp } from '@clerk/nextjs';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const registerSchema = z
   .object({

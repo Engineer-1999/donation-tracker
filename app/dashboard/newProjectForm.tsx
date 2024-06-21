@@ -9,8 +9,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { fixNumbers } from '@/utils/formatNumbers';
-import { supabaseClient } from '@/utils/supabase/client';
+import { fixNumbers } from '@/lib/formatNumbers';
+import { supabaseClient } from '@/lib/supabase/client';
 import { useAuth } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';

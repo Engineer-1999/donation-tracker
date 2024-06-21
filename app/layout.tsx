@@ -1,9 +1,10 @@
+import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Cairo } from 'next/font/google';
 import './globals.css';
 import Providers from './providers';
 
-const inter = Cairo({ subsets: ['arabic'] });
+const cairoFont = Cairo({ subsets: ['arabic'] });
 
 export const metadata: Metadata = {
   title: 'منصة سخاء',
@@ -18,8 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='ar' dir='rtl'>
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
+      <body className={cairoFont.className}>
+        <Providers>
+          {children}
+          <Toaster position='bottom-center' />
+        </Providers>
       </body>
     </html>
   );

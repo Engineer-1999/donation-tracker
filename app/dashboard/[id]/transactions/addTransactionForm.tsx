@@ -9,14 +9,14 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { fixNumbers } from '@/utils/formatNumbers';
-import { supabaseClient } from '@/utils/supabase/client';
+import { fixNumbers } from '@/lib/formatNumbers';
+import { supabaseClient } from '@/lib/supabase/client';
+import { Project } from '@/lib/supabase/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Project } from '@/utils/supabase/schema';
-import { useRouter } from 'next/navigation';
 
 const addTransactionSchema = z.object({
   donatorName: z.string().min(1, 'اسم المتبرع'),
@@ -122,7 +122,11 @@ const AddTransactionForm = ({ project }: { project: Project }) => {
             </FormItem>
           )}
         />
-        <Button type='submit' className='min-w-32 gap-2'>
+        <Button
+          type='submit'
+          className='min-w-32 gap-2'
+          style={{ backgroundColor: project.color }}
+        >
           <PlusIcon className='h-4 w-4' />
           إضافة تبرع
         </Button>

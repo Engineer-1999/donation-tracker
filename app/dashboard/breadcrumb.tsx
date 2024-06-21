@@ -8,7 +8,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { usePathname } from 'next/navigation';
 
 type DashboardBreadcrumbProps = {
   title: string;
@@ -23,7 +22,7 @@ const DashboardBreadcrumb = ({ title }: DashboardBreadcrumbProps) => {
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage>{title}</BreadcrumbPage>
+          <BreadcrumbPage className='font-semibold'>{title}</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

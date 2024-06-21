@@ -1,10 +1,10 @@
 'use client';
 
-import * as React from 'react';
 import * as ProgressPrimitive from '@radix-ui/react-progress';
+import * as React from 'react';
 
+import { formatPercentage } from '@/lib/formatNumbers';
 import { cn } from '@/lib/utils';
-import { formatPercentage } from '@/utils/formatNumbers';
 
 interface ProgressProps
   extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {

@@ -1,14 +1,12 @@
-import { createClerkSupabaseServerClient } from '@/utils/supabase/server';
 import { notFound } from 'next/navigation';
-import ProjectCard from './projectCard';
+import { fetchProjects } from './actions';
 import CreateNewProjectCard from './createNewProjectCard';
+import ProjectCard from './projectCard';
 
 const DashboardPage = async () => {
-  const client = await createClerkSupabaseServerClient();
+  const { projects, error } = await fetchProjects();
 
-  const { data: projects, error } = await client.from('projects').select();
-
-  if (error) {
+  if (error || !projects) {
     return notFound();
   }
 

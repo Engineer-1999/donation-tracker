@@ -1,4 +1,4 @@
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -6,14 +6,14 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { generateErrorMessage } from '@/lib/errorCodes';
 import { useUser } from '@clerk/nextjs';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { generateErrorMessage } from '@/lib/errorCodes';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const userDetailsSchema = z.object({
   firstName: z.string().min(1, 'أدخل اسمك الأول'),

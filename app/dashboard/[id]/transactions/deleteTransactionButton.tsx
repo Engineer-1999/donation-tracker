@@ -1,4 +1,4 @@
-import { XIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Drawer,
   DrawerClose,
@@ -9,9 +9,9 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
+import { supabaseClient } from '@/lib/supabase/client';
+import { XIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { supabaseClient } from '@/utils/supabase/client';
 
 type DeleteTransactionButtonProps = {
   id: string;

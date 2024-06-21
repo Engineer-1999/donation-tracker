@@ -1,9 +1,9 @@
 'use client';
 
-import { Project } from '@/utils/supabase/schema';
+import { supabaseClient } from '@/lib/supabase/client';
+import { Project } from '@/lib/supabase/schema';
 import DashboardBreadcrumb from '../breadcrumb';
 import PublishButton from './publishButton';
-import { supabaseClient } from '@/utils/supabase/client';
 
 const ProjectHeader = ({ project }: { project: Project }) => {
   const updateProjectPublished = async (value: boolean) => {
@@ -27,8 +27,10 @@ const ProjectHeader = ({ project }: { project: Project }) => {
     <header className='py-5 flex items-center justify-between'>
       <DashboardBreadcrumb title={project.name} />
       <PublishButton
+        hasAnImage={!!project.image_url}
         isPublishedProject={project.is_published}
         onPublishChange={updateProjectPublished}
+        id={project.id}
       />
     </header>
   );

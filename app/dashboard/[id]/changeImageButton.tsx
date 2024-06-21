@@ -1,7 +1,8 @@
 'use client';
 
-import { supabaseClient } from '@/utils/supabase/client';
-import { STORAGE_URL } from '@/utils/supabase/constants';
+import { supabaseClient } from '@/lib/supabase/client';
+import { STORAGE_URL } from '@/lib/supabase/constants';
+import { useRouter } from 'next/navigation';
 import { ChangeEvent } from 'react';
 
 type ChangeImageButtonProps = {
@@ -14,6 +15,7 @@ const ChangeImageButton = ({
   setImageUrl,
   setIsLoading,
 }: ChangeImageButtonProps) => {
+  const router = useRouter();
   const handleFileInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -46,6 +48,7 @@ const ChangeImageButton = ({
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
+    router.refresh();
 
     return () => clearTimeout(timer);
   };

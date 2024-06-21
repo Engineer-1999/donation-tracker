@@ -1,6 +1,6 @@
 import { Progress } from '@/components/ui/progress';
-import { formatDate } from '@/utils/formatNumbers';
-import { Project } from '@/utils/supabase/schema';
+import { formatDate } from '@/lib/formatNumbers';
+import { Project } from '@/lib/supabase/schema';
 import Link from 'next/link';
 
 type ProjectCardProps = {
@@ -12,7 +12,8 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
     <section className='rounded-lg bg-primary-50 border border-primary-100 overflow-hidden'>
       <Link
         href={`/dashboard/${project.id}`}
-        className='block text-lg border-b border-primary-100 p-3 font-semibold text-white bg-primary-500'
+        className='block text-lg border-b border-primary-100 p-3 font-semibold text-white'
+        style={{ backgroundColor: project.color }}
       >
         {project.name}
       </Link>
@@ -20,7 +21,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         <Progress
           value={parseFloat(project.progress)}
           target={parseFloat(project.target_goal)}
-          color='#438987'
+          color={project.color}
           showPercentage
         />
       </div>

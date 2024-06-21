@@ -1,8 +1,7 @@
-import React from 'react';
-import { DataTable } from './dataTable';
+import { formatCurrency, formatDate } from '@/lib/formatNumbers';
+import { Transaction } from '@/lib/supabase/schema';
 import { columns } from './columns';
-import { formatCurrency, formatDate } from '@/utils/formatNumbers';
-import { Transaction } from '@/utils/supabase/schema';
+import { DataTable } from './dataTable';
 
 const transformData = (transactions: Transaction[]) => {
   return transactions.map((transaction) => ({

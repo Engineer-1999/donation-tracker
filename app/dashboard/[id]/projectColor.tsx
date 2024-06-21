@@ -2,10 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { useState } from 'react';
-import { HexColorInput, HexColorPicker } from 'react-colorful';
+import { supabaseClient } from '@/lib/supabase/client';
 import { useClickAway, useDebounce } from '@uidotdev/usehooks';
-import { supabaseClient } from '@/utils/supabase/client';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { HexColorInput, HexColorPicker } from 'react-colorful';
 
 type ProjectColorProps = {
   id: string;
@@ -13,6 +14,7 @@ type ProjectColorProps = {
 };
 
 const ProjectColor = ({ id, projectColor }: ProjectColorProps) => {
+  const router = useRouter();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [color, setColor] = useState(projectColor);
   const debouncedColor = useDebounce(color, 500);
@@ -21,19 +23,26 @@ const ProjectColor = ({ id, projectColor }: ProjectColorProps) => {
     setShowColorPicker(false);
   });
 
-  const handleColorChange = async (color: string) => {
-    setColor(color);
-    const { error } = await supabaseClient
-      .from('projects')
-      .update({
-        color,
-      })
-      .match({ id });
+  useEffect(() => {
+    const updateColorInSupabase = async (color: string) => {
+      const { error } = await supabaseClient
+        .from('projects')
+        .update({ color })
+        .match({ id });
 
-    if (error) {
-      console.log(error);
-      return;
+      if (error) {
+        console.log(error);
+      }
+    };
+
+    if (debouncedColor) {
+      updateColorInSupabase(debouncedColor);
+      router.refresh();
     }
+  }, [debouncedColor, id, router]);
+
+  const handleColorChange = (color: string) => {
+    setColor(color);
   };
 
   return (
