@@ -24,7 +24,7 @@ const ProjectHeader = ({ project }: { project: Project }) => {
   console.log(project);
 
   return (
-    <header className='py-5 flex items-center justify-between'>
+    <header className='py-5 flex items-center justify-between flex-wrap gap-4'>
       <DashboardBreadcrumb title={project.name} />
       <PublishButton
         hasAnImage={!!project.image_url}

@@ -23,7 +23,7 @@ const Header = () => {
 
   return (
     <header className='border-b border-gray-200'>
-      <div className='container flex items-center justify-between px-8 py-4'>
+      <div className='container flex items-center justify-between pl-5 pr-6 py-4'>
         <Link href='/dashboard'>
           <Logo className='h-6 w-auto text-primary-900 hover:text-primary-800 transition-colors duration-200' />
         </Link>
@@ -38,7 +38,7 @@ const Header = () => {
                   user?.lastName ?? '',
                 )}
               />
-              <h3 className='font-semibold text-gray-900 ml-4'>
+              <h3 className='font-semibold text-gray-900'>
                 {fullName.includes('undefined') ? 'جاري التحميل...' : fullName}
               </h3>
             </MenubarTrigger>

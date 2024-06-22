@@ -10,6 +10,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { supabaseClient } from '@/lib/supabase/client';
+import { Project, Transaction } from '@/lib/supabase/schema';
 import { XIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -21,6 +22,28 @@ const DeleteTransactionButton = ({ id }: DeleteTransactionButtonProps) => {
   const router = useRouter();
 
   const deleteTransaction = async (id: string) => {
+    const { data: transaction } = await supabaseClient
+      .from('transactions')
+      .select()
+      .eq('id', id)
+      .returns<Transaction[]>()
+      .single();
+
+    if (!transaction) {
+      return;
+    }
+
+    const { data: project } = await supabaseClient
+      .from('projects')
+      .select()
+      .eq('id', transaction.project_id)
+      .returns<Project[]>()
+      .single();
+
+    if (!project) {
+      return;
+    }
+
     const { error } = await supabaseClient
       .from('transactions')
       .delete()
@@ -29,6 +52,19 @@ const DeleteTransactionButton = ({ id }: DeleteTransactionButtonProps) => {
     if (error) {
       console.log(error);
     }
+
+    const { error: updateProgressValueError } = await supabaseClient
+      .from('projects')
+      .update({
+        progress: parseFloat(project.progress) - parseFloat(transaction.amount),
+      })
+      .match({ id: project.id });
+
+    if (updateProgressValueError) {
+      console.log(updateProgressValueError);
+    }
+
+    router.refresh();
   };
 
   return (

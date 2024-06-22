@@ -50,9 +50,9 @@ const page = async ({ params }: { params: { id: string } }) => {
   console.log(project);
 
   return (
-    <section className='container'>
+    <section className='container px-5'>
       <ProjectHeader project={project} />
-      <section className='py-5 flex items-center justify-between gap-5'>
+      <section className='py-5 flex flex-wrap items-center justify-between gap-2 md:gap-5'>
         {statusCards.map((card) => (
           <StatusCard
             key={card.title}

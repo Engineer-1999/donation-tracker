@@ -21,7 +21,7 @@ import { z } from 'zod';
 const addTransactionSchema = z.object({
   donatorName: z.string().min(1, 'اسم المتبرع'),
   donationAmount: z.string().refine((val) => {
-    const parsed = parseFloat(val);
+    const parsed = parseFloat(fixNumbers(val));
     return !isNaN(parsed) && isFinite(parsed) && parsed > 0;
   }, 'ادخل مبلغا صحيحا'),
 });
@@ -35,22 +35,27 @@ const AddTransactionForm = ({ project }: { project: Project }) => {
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
       donatorName: '',
-      donationAmount: '0',
+      donationAmount: '',
     },
   });
 
   const handleAnanName = () => {
     form.setValue('donatorName', 'فاعل خير');
+    form.setFocus('donationAmount');
   };
 
   const onSubmit = async (values: AddTransactionFormData) => {
+    const transformedDonationAmount = parseFloat(
+      fixNumbers(values.donationAmount),
+    );
+
     const { error: updateTransactionError } = await supabaseClient
       .from('transactions')
       .insert([
         {
           project_id: project.id,
           name: values.donatorName,
-          amount: fixNumbers(values.donationAmount),
+          amount: transformedDonationAmount,
         },
       ]);
 
@@ -61,7 +66,7 @@ const AddTransactionForm = ({ project }: { project: Project }) => {
     const { error: updateProgressValueError } = await supabaseClient
       .from('projects')
       .update({
-        progress: project.progress + parseFloat(values.donationAmount),
+        progress: project.progress + transformedDonationAmount,
       })
       .match({ id: project.id });
 
@@ -76,7 +81,7 @@ const AddTransactionForm = ({ project }: { project: Project }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='flex items-center justify-between gap-4 w-full'
+        className='flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4 w-full'
       >
         <FormField
           control={form.control}
@@ -109,7 +114,7 @@ const AddTransactionForm = ({ project }: { project: Project }) => {
           control={form.control}
           name='donationAmount'
           render={({ field }) => (
-            <FormItem>
+            <FormItem className='w-full md:w-auto'>
               <FormControl>
                 <Input
                   type='text'
@@ -124,7 +129,7 @@ const AddTransactionForm = ({ project }: { project: Project }) => {
         />
         <Button
           type='submit'
-          className='min-w-32 gap-2'
+          className='min-w-32 gap-2 w-full md:w-auto'
           style={{ backgroundColor: project.color }}
         >
           <PlusIcon className='h-4 w-4' />
