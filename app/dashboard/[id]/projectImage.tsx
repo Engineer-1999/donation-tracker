@@ -1,24 +1,71 @@
 'use client';
 
 import { supabaseClient } from '@/lib/supabase/client';
-import { STORAGE_URL } from '@/lib/supabase/constants';
-import { CloudUploadIcon, Loader2 } from 'lucide-react';
+import ColorThief from 'colorthief';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ChangeEvent, useState } from 'react';
+import { useRef, useState } from 'react';
 import ChangeImageButton from './changeImageButton';
+import ImageInput from './imageInput';
 
 type ProjectImageProps = {
   name: string;
   image_url: string;
   id: string;
+  projectColor: string;
+  setProjectColor: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const ProjectImage = ({ id, name, image_url }: ProjectImageProps) => {
+const ProjectImage = ({
+  id,
+  name,
+  image_url,
+  projectColor,
+  setProjectColor,
+}: ProjectImageProps) => {
+  const router = useRouter();
   const [imageUrl, setImageUrl] = useState<string>(image_url);
   const [isLoading, setIsLoading] = useState(false);
+  const [dominantColors, setDominantColors] = useState<string[]>([]);
+  const image = useRef<HTMLImageElement>(null);
 
   const hasAnImage = !!image_url || !!imageUrl;
+
+  const extractColors = async () => {
+    const colorThief = new ColorThief();
+    const palette = await colorThief.getPalette(image.current, 8);
+
+    if (!palette) {
+      console.error('No dominant colors found');
+      return;
+    }
+
+    setDominantColors(
+      palette.map((color) => `rgb(${color[0]}, ${color[1]}, ${color[2]})`),
+    );
+  };
+
+  const updateColor = async (color: string) => {
+    const oldColor = projectColor;
+    setProjectColor(color);
+
+    const { error } = await supabaseClient
+      .from('projects')
+      .update({ color })
+      .match({ id });
+
+    if (error) {
+      setProjectColor(oldColor);
+      console.log(error);
+      return;
+    }
+
+    router.refresh();
+  };
+
+  console.log(dominantColors);
 
   return (
     <section className=''>
@@ -33,30 +80,59 @@ const ProjectImage = ({ id, name, image_url }: ProjectImageProps) => {
         )}
       </h4>
       {hasAnImage ? (
-        <div className='p-2 bg-gray-100 rounded-lg flex items-center justify-center'>
-          <div className='relative w-fit h-fit'>
-            <Image
-              src={imageUrl}
-              alt={name}
-              width={200}
-              height={200}
-              className='rounded-lg'
-            />
-            {/* overlay */}
-            <div
-              className='absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300'
-              style={{ opacity: isLoading ? 1 : 0 }}
-            />
-            <div
-              className='absolute inset-0 z-10 flex items-center justify-center'
-              style={{ opacity: isLoading ? 1 : 0 }}
-            >
-              <Loader2 className='text-white animate-spin w-7 h-7' />
+        <div>
+          <div className='p-2 bg-gray-100 rounded-lg flex items-center justify-center'>
+            <div className='relative w-fit h-fit'>
+              <Image
+                ref={image}
+                src={imageUrl}
+                alt={name}
+                width={200}
+                height={200}
+                className='rounded-lg'
+                onLoad={extractColors}
+              />
+              {/* overlay */}
+              <div
+                className='absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300'
+                style={{ opacity: isLoading ? 1 : 0 }}
+              />
+              <div
+                className='absolute inset-0 z-10 flex items-center justify-center'
+                style={{ opacity: isLoading ? 1 : 0 }}
+              >
+                <Loader2 className='text-white animate-spin w-7 h-7' />
+              </div>
             </div>
+          </div>
+          <div className='flex items-center justify-center gap-3 py-3 overflow-hidden'>
+            {dominantColors.map((color, index) => (
+              <AnimatePresence key={index} mode='wait'>
+                <motion.button
+                  key={index + color}
+                  initial={{ y: -60, scale: 0.5, transformOrigin: 'center' }}
+                  animate={{ y: 0, scale: 1 }}
+                  exit={{ y: 60, scale: 0.5 }}
+                  transition={{
+                    delay: index * 0.06,
+                    type: 'spring',
+                    bounce: 0.2,
+                  }}
+                  className='h-8 md:h-12 w-full rounded-lg bg-white'
+                  whileHover={{
+                    scale: color === projectColor ? 1 : 1.05,
+                    transition: { delay: 0 },
+                  }}
+                  onClick={() => updateColor(color)}
+                  style={{ backgroundColor: color }}
+                  disabled={color === projectColor}
+                />
+              </AnimatePresence>
+            ))}
           </div>
         </div>
       ) : (
-        <FileInput
+        <ImageInput
           id={id}
           setImageUrl={setImageUrl}
           isLoading={isLoading}
@@ -64,72 +140,6 @@ const ProjectImage = ({ id, name, image_url }: ProjectImageProps) => {
         />
       )}
     </section>
-  );
-};
-
-const FileInput = ({
-  id,
-  setImageUrl,
-  isLoading,
-  setIsLoading,
-}: {
-  id: string;
-  setImageUrl: (url: string) => void;
-  isLoading: boolean;
-  setIsLoading: (value: boolean) => void;
-}) => {
-  const router = useRouter();
-  const handleFileInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsLoading(true);
-    const { data, error } = await supabaseClient.storage
-      .from('images')
-      .upload(`${id}`, file);
-
-    if (error) {
-      console.log(error);
-      return;
-    }
-
-    setImageUrl(STORAGE_URL + id);
-    const { error: updateImageUrlError } = await supabaseClient
-      .from('projects')
-      .update({
-        image_url: STORAGE_URL + id,
-      })
-      .match({ id });
-
-    if (updateImageUrlError) {
-      console.log(error);
-      return;
-    }
-
-    router.refresh();
-    setIsLoading(false);
-    console.log(data);
-  };
-
-  return (
-    <div className='border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg w-full p-12 flex flex-col items-center justify-center space-y-4 transition-colors duration-300 hover:border-gray-400 dark:hover:border-gray-500 cursor-pointer'>
-      <CloudUploadIcon className='h-12 w-12 text-gray-400 dark:text-gray-500' />
-      <p className='text-gray-500 dark:text-gray-400'>
-        انقر لتحديد صورة للإعلان
-      </p>
-      <input
-        type='file'
-        id='file-input'
-        className='sr-only'
-        onChange={handleFileInputChange}
-      />
-      <label
-        htmlFor='file-input'
-        className='inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200 dark:focus:ring-gray-300 dark:focus:ring-offset-gray-950 cursor-pointer'
-      >
-        {isLoading ? 'تحميل الصورة...' : 'تصفح الملفات'}
-      </label>
-    </div>
   );
 };
 

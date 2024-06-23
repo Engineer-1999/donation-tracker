@@ -11,13 +11,17 @@ import { HexColorInput, HexColorPicker } from 'react-colorful';
 type ProjectColorProps = {
   id: string;
   projectColor: string;
+  setProjectColor: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const ProjectColor = ({ id, projectColor }: ProjectColorProps) => {
+const ProjectColor = ({
+  id,
+  projectColor,
+  setProjectColor,
+}: ProjectColorProps) => {
   const router = useRouter();
   const [showColorPicker, setShowColorPicker] = useState(false);
-  const [color, setColor] = useState(projectColor);
-  const debouncedColor = useDebounce(color, 500);
+  const debouncedColor = useDebounce(projectColor, 500);
 
   const ref = useClickAway<HTMLDivElement>(() => {
     setShowColorPicker(false);
@@ -42,7 +46,7 @@ const ProjectColor = ({ id, projectColor }: ProjectColorProps) => {
   }, [debouncedColor, id, router]);
 
   const handleColorChange = (color: string) => {
-    setColor(color);
+    setProjectColor(color);
   };
 
   return (
@@ -62,7 +66,7 @@ const ProjectColor = ({ id, projectColor }: ProjectColorProps) => {
             <span
               className='w-4 h-4 rounded-full bg-white'
               style={{
-                backgroundColor: color,
+                backgroundColor: projectColor,
               }}
             />
             تغيير اللون
@@ -70,9 +74,12 @@ const ProjectColor = ({ id, projectColor }: ProjectColorProps) => {
           {showColorPicker && (
             <div ref={ref} className='absolute left-0 top-11 z-50'>
               <div className='border border-gray-200 rounded-lg p-1 mb-4 w-fit relative text-gray-700 bg-white'>
-                <HexColorPicker color={color} onChange={handleColorChange} />
+                <HexColorPicker
+                  color={projectColor}
+                  onChange={handleColorChange}
+                />
                 <HexColorInput
-                  color={color}
+                  color={projectColor}
                   onChange={handleColorChange}
                   dir='ltr'
                   className='w-full pl-6 p-2 mt-1 focus:ring-0 focus:outline-none bg-gray-100 rounded'
@@ -83,7 +90,7 @@ const ProjectColor = ({ id, projectColor }: ProjectColorProps) => {
           )}
         </div>
       </section>
-      <Progress color={color} value={60} target={100} />
+      <Progress color={projectColor} value={60} target={100} />
     </section>
   );
 };
