@@ -13,8 +13,6 @@ const RegisterPage = () => {
   const [verifying, setVerifying] = useState(false);
   const [userDetails, setUserDetails] = useState(false);
 
-  console.log(userDetails);
-
   const title = {
     initial: 'إنشاء حساب جديد',
     verifying: 'تأكيد بريدك الالكتروني',
