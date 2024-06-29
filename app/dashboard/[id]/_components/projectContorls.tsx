@@ -11,21 +11,25 @@ import { toast } from 'sonner';
 const PUBLISHED_TEXT = 'هذا المشروع منشور';
 const UNPUBLISHED_TEXT = 'هذا المشروع غير منشور';
 
-type PublishButtonProps = {
+type ProjectContorlsProps = {
   isPublishedProject: boolean;
   onPublishChange: (value: boolean) => void;
   hasAnImage?: boolean;
   id: string;
 };
 
-const PublishButton = ({
+const ProjectContorls = ({
   isPublishedProject,
   onPublishChange,
   hasAnImage = true,
   id,
-}: PublishButtonProps) => {
+}: ProjectContorlsProps) => {
   const [isPublished, setIsPublished] = useState(isPublishedProject);
-  const url = `${window.location.origin}/project/${id}`;
+
+  let url = '';
+  if (typeof window !== 'undefined') {
+    url = `${window.location.origin}/project/${id}`;
+  }
 
   const handlePublishChange = (value: boolean) => {
     if (!hasAnImage) {
@@ -48,7 +52,7 @@ const PublishButton = ({
 
   return (
     <div className='flex items-center gap-2'>
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {isPublished && (
           <div className='flex items-center gap-2'>
             <MotionButton
@@ -108,4 +112,4 @@ const PublishButton = ({
   );
 };
 
-export default PublishButton;
+export default ProjectContorls;

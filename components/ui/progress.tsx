@@ -48,7 +48,7 @@ const Progress = React.forwardRef<
             indicatorClassName,
           )}
           style={{
-            transform: `translateX(${100 - progress}%)`,
+            transform: `translateX(${100 - Math.min(progress, 100)}%)`,
             backgroundColor: color,
           }}
         />

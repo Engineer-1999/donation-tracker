@@ -1,7 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { FullscreenIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { FullscreenIcon, SlidersHorizontal } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type FullScreenButtonProps = {
@@ -42,14 +43,14 @@ const FullScreenButton = ({ className }: FullScreenButtonProps) => {
   }
 
   return (
-    <Button
-      variant='default'
-      size='icon'
-      onClick={toggleFullScreen}
-      className={className}
-    >
-      <FullscreenIcon className='h-6 w-6' />
-    </Button>
+    <div className={cn('flex items-center gap-2 flex-col', className)}>
+      <Button variant='default' size='icon' onClick={toggleFullScreen}>
+        <FullscreenIcon className='h-6 w-6' />
+      </Button>
+      <Button variant='default' size='icon'>
+        <SlidersHorizontal className='w-6 h-6' />
+      </Button>
+    </div>
   );
 };
 

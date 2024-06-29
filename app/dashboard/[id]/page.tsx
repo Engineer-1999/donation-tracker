@@ -46,8 +46,6 @@ const page = async ({ params }: { params: { id: string } }) => {
     },
   ];
 
-  console.log(project);
-
   return (
     <section className='container px-5'>
       <ProjectHeader project={project} />
