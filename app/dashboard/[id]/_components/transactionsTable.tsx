@@ -14,8 +14,12 @@ const transformData = (transactions: Transaction[]) => {
 const TransactionsTable = async ({
   transactions,
 }: {
-  transactions: Transaction[];
+  transactions: Transaction[] | null;
 }) => {
+  if (!transactions) {
+    return null;
+  }
+
   const data = transformData(transactions);
   return <DataTable columns={columns} data={data} />;
 };

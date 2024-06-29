@@ -10,10 +10,6 @@ import { PlusIcon } from 'lucide-react';
 import NewProjectForm from './newProjectForm';
 
 const CreateNewProjectCard = () => {
-  const handleCreateNewProject = () => {
-    console.log('Create new project');
-  };
-
   return (
     <Dialog>
       <DialogTrigger asChild>

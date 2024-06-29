@@ -2,7 +2,7 @@
 
 import { supabaseClient } from '@/lib/supabase/client';
 import { Project } from '@/lib/supabase/schema';
-import DashboardBreadcrumb from '../breadcrumb';
+import DashboardBreadcrumb from '../../_components/breadcrumb';
 import PublishButton from './publishButton';
 
 const ProjectHeader = ({ project }: { project: Project }) => {

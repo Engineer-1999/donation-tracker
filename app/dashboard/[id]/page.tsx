@@ -1,12 +1,12 @@
 import { formatCurrency, formatPercentage } from '@/lib/formatNumbers';
 import { CircleDot, CirclePlus, HandCoins } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import AddTransactionForm from './_components/addTransactionForm';
+import ProjectHeader from './_components/header';
+import ProjectConfigs from './_components/projectConfigs';
+import StatusCard from './_components/statusCard';
+import TransactionsTable from './_components/transactionsTable';
 import { fetchProjectById, fetchTransactionsByProjectId } from './actions';
-import ProjectHeader from './header';
-import ProjectConfigs from './projectConfigs';
-import StatusCard from './statusCard';
-import AddTransactionForm from './transactions/addTransactionForm';
-import TransactionsTable from './transactions/transactionsTable';
 
 const page = async ({ params }: { params: { id: string } }) => {
   const { project, error: projectFetchingError } = await fetchProjectById(
