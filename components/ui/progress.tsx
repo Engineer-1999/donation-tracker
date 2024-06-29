@@ -12,6 +12,7 @@ interface ProgressProps
   value: number;
   color?: string;
   showPercentage?: boolean;
+  indicatorClassName?: string;
 }
 
 const Progress = React.forwardRef<
@@ -25,6 +26,7 @@ const Progress = React.forwardRef<
       target,
       color = '#000',
       showPercentage = false,
+      indicatorClassName,
       ...props
     },
     ref,
@@ -41,7 +43,10 @@ const Progress = React.forwardRef<
         {...props}
       >
         <ProgressPrimitive.Indicator
-          className='h-full w-full flex-1 transition-all'
+          className={cn(
+            'h-full w-full flex-1 transition-all',
+            indicatorClassName,
+          )}
           style={{
             transform: `translateX(${100 - progress}%)`,
             backgroundColor: color,
@@ -58,10 +63,10 @@ const Progress = React.forwardRef<
               </span>
             ) : (
               <span
-                className='absolute left-3 top-1/2 -translate-y-1/2 font-bold'
+                className='absolute left-5 top-1/2 -translate-y-1/2 font-bold'
                 style={{ color: progress > 90 ? '#fff' : color }}
               >
-                {formatPercentage(value / target)}
+                {formatPercentage(value / target, 'en-US')}
               </span>
             )}
           </>
