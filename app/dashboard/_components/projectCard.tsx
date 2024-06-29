@@ -9,7 +9,7 @@ import {
   MenubarTrigger,
 } from '@/components/ui/menubar';
 import { Progress } from '@/components/ui/progress';
-import { formatDate } from '@/lib/formatNumbers';
+import { formatDate, formatPercentage } from '@/lib/formatNumbers';
 import { supabaseClient } from '@/lib/supabase/client';
 import { Project } from '@/lib/supabase/schema';
 import { EllipsisVertical, Trash2 } from 'lucide-react';
@@ -37,29 +37,18 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   };
 
   return (
-    <section className='rounded-lg bg-primary-50 border border-primary-100 overflow-hidden'>
-      <Link
-        href={`/dashboard/${project.id}`}
-        className='block text-lg border-b border-primary-100 p-3 font-semibold text-white'
-        style={{ backgroundColor: project.color }}
-      >
-        {project.name}
-      </Link>
-      <div className='flex items-center justify-between p-3'>
-        <Progress
-          value={parseFloat(project.progress)}
-          target={parseFloat(project.target_goal)}
-          color={project.color}
-          showPercentage
-        />
-      </div>
-      <div className='flex items-center justify-between p-3'>
-        <span className='text-sm text-gray-500 p-3'>
-          {formatDate(project.created_at)}
-        </span>
+    <section className='rounded-lg border border-primary-100 overflow-hidden flex flex-col justify-between hover:bg-gray-50/50'>
+      <div className='flex items-center justify-between border-b border-primary-100 py-1 pr-4 pl-0.5'>
+        <Link
+          href={`/dashboard/${project.id}`}
+          className='text-lg font-semibold hover:underline underline-offset-2'
+          style={{ color: project.color }}
+        >
+          {project.name}
+        </Link>
         <Menubar className='bg-transparent'>
           <MenubarMenu>
-            <MenubarTrigger>
+            <MenubarTrigger className='aspect-square'>
               <EllipsisVertical className='h-4 w-4' />
             </MenubarTrigger>
             <MenubarContent>
@@ -75,6 +64,25 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
+      </div>
+
+      <div className='flex items-center justify-between p-1'>
+        <span className='text-sm text-gray-500 p-3'>
+          {formatDate(project.created_at)}
+        </span>
+        <span className='text-sm text-gray-500 p-3'>
+          {formatPercentage(
+            parseFloat(project.progress) / parseFloat(project.target_goal),
+          )}
+        </span>
+      </div>
+      <div className='flex items-center justify-between'>
+        <Progress
+          value={parseFloat(project.progress)}
+          target={parseFloat(project.target_goal)}
+          color={project.color}
+          className='rounded-none h-5 w-full border-none'
+        />
       </div>
     </section>
   );

@@ -15,7 +15,7 @@ const CreateNewProjectCard = () => {
       <DialogTrigger asChild>
         <Button
           variant='outline'
-          className='rounded-lg flex flex-col items-center justify-center py-7 border border-primary-100 text-primary-500 hover:text-primary-600 overflow-hidden'
+          className='rounded-lg flex flex-col items-center justify-center py-6 border border-primary-100 text-primary-500 hover:text-primary-600 overflow-hidden'
         >
           <PlusIcon className='h-6 w-6' />
           <h3 className='text-lg p-3 font-semibold'>إنشاء مشروع جديد</h3>

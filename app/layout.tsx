@@ -2,14 +2,25 @@ import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Cairo } from 'next/font/google';
 import './globals.css';
+import { description, title } from './metadata';
 import Providers from './providers';
 
 const cairoFont = Cairo({ subsets: ['arabic'] });
 
 export const metadata: Metadata = {
-  title: 'منصة سخاء',
-  description:
-    'تطبيق لإدارة التبرعات، يتيح للمسؤولين تتبع حملات التبرعات وتحديث نسبة الإنجاز تلقائيًا، مع دعم إدارة حملات متعددة بفعالية.',
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    type: 'website',
+    siteName: title,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description,
+  },
 };
 
 export default function RootLayout({

@@ -1,13 +1,7 @@
-'use client';
-
-import { useEffect } from 'react';
+import { redirect } from 'next/navigation';
 
 const HomePage = () => {
-  useEffect(() => {
-    window.location.href = '/dashboard';
-  }, []);
-
-  return null;
+  return redirect('/dashboard');
 };
 
 export default HomePage;
