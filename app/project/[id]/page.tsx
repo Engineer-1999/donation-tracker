@@ -1,6 +1,7 @@
 import { fetchProjectById } from '@/app/dashboard/[id]/actions';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import FullScreenButton from './fullScreenButton';
 import OutputProgress from './outputProgress';
 
 const PublishedProjectPage = async ({ params }: { params: { id: string } }) => {
@@ -11,7 +12,7 @@ const PublishedProjectPage = async ({ params }: { params: { id: string } }) => {
   }
 
   return (
-    <div className='relative w-screen h-screen flex items-center justify-center overflow-hidden'>
+    <div className='relative w-screen h-screen flex items-center justify-center overflow-hidden bg-black'>
       <Image
         src={project.image_url}
         alt={project.name}
@@ -20,6 +21,7 @@ const PublishedProjectPage = async ({ params }: { params: { id: string } }) => {
         className='object-contain h-full w-full'
       />
       <OutputProgress project={project} />
+      <FullScreenButton className='absolute top-4 right-4' />
     </div>
   );
 };
