@@ -53,10 +53,17 @@ const DeleteTransactionButton = ({ id }: DeleteTransactionButtonProps) => {
       console.log(error);
     }
 
+    let updatedProgress =
+      parseFloat(project.progress) - parseFloat(transaction.amount);
+
+    if (updatedProgress < 0) {
+      updatedProgress = 0;
+    }
+
     const { error: updateProgressValueError } = await supabaseClient
       .from('projects')
       .update({
-        progress: parseFloat(project.progress) - parseFloat(transaction.amount),
+        progress: updatedProgress.toString(),
       })
       .match({ id: project.id });
 

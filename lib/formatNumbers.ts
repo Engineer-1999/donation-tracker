@@ -1,7 +1,7 @@
 export function formatPercentage(value: number, locale: string = 'ar-SA') {
   return new Intl.NumberFormat(locale, {
     style: 'percent',
-    minimumFractionDigits: 0,
+    minimumFractionDigits: 1,
   }).format(value);
 }
 
