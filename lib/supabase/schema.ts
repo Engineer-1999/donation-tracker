@@ -1,3 +1,15 @@
+export type ProjectSettings = {
+  shape?: 'circle' | 'square' | 'rounded';
+  padding?: number;
+  displacement?: number;
+  showPercentage?: boolean;
+  description?: string;
+  descriptionPosition?: 'top' | 'bottom';
+  showAllNumbers?: boolean;
+  allNumbersPosition?: 'top' | 'bottom';
+  size?: number;
+};
+
 export type Project = {
   id: string;
   created_at: string;
@@ -8,7 +20,7 @@ export type Project = {
   color: string;
   is_published: boolean;
   user_id: string;
-  history: null;
+  settings: ProjectSettings;
 };
 
 export type Transaction = {

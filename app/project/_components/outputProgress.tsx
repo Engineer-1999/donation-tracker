@@ -9,10 +9,18 @@ import { useEffect, useState } from 'react';
 type OutputProgressProps = {
   project: Project;
   className?: string;
+  padding?: number;
+  shape?: 'circle' | 'square' | 'rounded';
+  showPercentage?: boolean;
+  size?: number;
 };
 const OutputProgress = ({
   project: initialProject,
+  shape = 'rounded',
+  padding = 0,
+  showPercentage = false,
   className,
+  size = 100,
 }: OutputProgressProps) => {
   const [project, setProject] = useState<Project>(initialProject);
 
@@ -44,9 +52,11 @@ const OutputProgress = ({
         value={parseFloat(project.progress)}
         target={parseFloat(project.target_goal)}
         color={project.color}
-        showPercentage
-        indicatorClassName='rounded-full'
+        shape={shape}
+        padding={padding}
+        showPercentage={showPercentage}
         className={cn('shadow-sm', className)}
+        size={size}
       />
     </div>
   );
