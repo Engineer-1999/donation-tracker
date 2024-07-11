@@ -1,12 +1,4 @@
 import { Button } from '@/components/ui/button';
-import {
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
 import { Switch } from '@/components/ui/switch';
 import { Project, ProjectSettings } from '@/lib/supabase/schema';
 import {
@@ -25,7 +17,6 @@ type ControlsSliderProps = {
   projectSettings: ProjectSettings;
   setProjectSettings: Dispatch<SetStateAction<ProjectSettings>>;
   updateProject: (projectId: string, data: any) => Promise<Project>;
-  setIsControlsOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 const ControlsSlider = ({
@@ -33,7 +24,6 @@ const ControlsSlider = ({
   projectSettings,
   setProjectSettings,
   updateProject,
-  setIsControlsOpen,
 }: ControlsSliderProps) => {
   const [saving, setSaving] = useState(false);
 
@@ -43,7 +33,6 @@ const ControlsSlider = ({
       settings: projectSettings,
     });
     setSaving(false);
-    setIsControlsOpen(false);
   };
 
   const onCancel = () => {
@@ -51,13 +40,11 @@ const ControlsSlider = ({
   };
 
   return (
-    <SheetContent className='pt-16 flex flex-col justify-between'>
-      <SheetHeader className='mb-16'>
-        <SheetTitle>لوحة التحكم</SheetTitle>
-        <SheetDescription>
-          هنا يمكنك تغيير ما تريده في شكل الإعلان الظاهر على الموقع للعامة.
-        </SheetDescription>
-      </SheetHeader>
+    <>
+      <div>
+        <h1>لوحة التحكم</h1>
+        <p>هنا يمكنك تغيير ما تريده في شكل الإعلان الظاهر على الموقع للعامة.</p>
+      </div>
       <section className='flex flex-col'>
         <div className='flex items-center justify-between gap-4 p-4 border-y border-neutral-200'>
           <h5 className='text-primary-600 font-medium'>مكان شريط التقدم</h5>
@@ -197,22 +184,18 @@ const ControlsSlider = ({
           />
         </div>
       </section>
-      <SheetFooter className='flex gap-4'>
-        <Button
-          variant='default'
-          className='w-full'
-          onClick={onSave}
-          isLoading={saving}
-        >
-          حفظ
-        </Button>
-        <SheetClose>
-          <Button variant='secondary' className='px-8' onClick={onCancel}>
-            إلغاء
-          </Button>
-        </SheetClose>
-      </SheetFooter>
-    </SheetContent>
+      <Button
+        variant='default'
+        className='w-full'
+        onClick={onSave}
+        isLoading={saving}
+      >
+        حفظ
+      </Button>
+      <Button variant='secondary' className='px-8' onClick={onCancel}>
+        إلغاء
+      </Button>
+    </>
   );
 };
 

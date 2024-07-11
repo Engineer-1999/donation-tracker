@@ -3,7 +3,6 @@ import { CircleDot, CirclePlus, HandCoins } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import AddTransactionForm from './_components/addTransactionForm';
 import ProjectHeader from './_components/header';
-import ProjectConfigs from './_components/projectConfigs';
 import StatusCard from './_components/statusCard';
 import TransactionsTable from './_components/transactionsTable';
 import { fetchProjectById, fetchTransactionsByProjectId } from './actions';
@@ -60,15 +59,10 @@ const page = async ({ params }: { params: { id: string } }) => {
         ))}
       </section>
 
-      <section className=' grid grid-cols-1 md:grid-cols-2 gap-8'>
-        <section className='py-5'>
-          <section className='space-y-5'>
-            <AddTransactionForm project={project} />
-            {/* @ts-expect-error Server Component */}
-            <TransactionsTable transactions={transactions} />
-          </section>
-        </section>
-        <ProjectConfigs project={project} />
+      <section className='py-5 space-y-5'>
+        <AddTransactionForm project={project} />
+        {/* @ts-expect-error Server Component */}
+        <TransactionsTable transactions={transactions} />
       </section>
     </section>
   );

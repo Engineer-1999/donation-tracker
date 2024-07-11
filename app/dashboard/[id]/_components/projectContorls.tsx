@@ -1,15 +1,16 @@
 'use client';
 
-import { MotionButton } from '@/components/ui/motionButton';
+import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Clipboard, Link as LinkIcon } from 'lucide-react';
+import { Clipboard, Link as LinkIcon, Settings2 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-const PUBLISHED_TEXT = 'هذا المشروع منشور';
-const UNPUBLISHED_TEXT = 'هذا المشروع غير منشور';
+const PUBLISHED_TEXT = 'ايقاف نشر المشروع';
+const UNPUBLISHED_TEXT = 'نشر المشروع';
 
 type ProjectContorlsProps = {
   isPublishedProject: boolean;
@@ -26,9 +27,11 @@ const ProjectContorls = ({
 }: ProjectContorlsProps) => {
   const [isPublished, setIsPublished] = useState(isPublishedProject);
 
-  let url = '';
+  let projectUrl = '';
+  let visoualEditorUrl = '';
   if (typeof window !== 'undefined') {
-    url = `${window.location.origin}/project/${id}`;
+    projectUrl = `${window.location.origin}/project/${id}`;
+    visoualEditorUrl = `${window.location.origin}/dashboard/editor/${id}`;
   }
 
   const handlePublishChange = (value: boolean) => {
@@ -42,52 +45,44 @@ const ProjectContorls = ({
   };
 
   const copyProjectUrlToClipboard = () => {
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(projectUrl);
     toast.success('تم نسخ رابط المشروع إلى الحافظة');
   };
 
   const openProjectPage = () => {
-    window.open(url, '_blank');
+    window.open(projectUrl, '_blank');
   };
 
   return (
     <div className='flex items-center gap-2'>
       <AnimatePresence initial={false}>
-        {isPublished && (
-          <div className='flex items-center gap-2'>
-            <MotionButton
+        <div className='flex items-center gap-2'>
+          <Link href={visoualEditorUrl}>
+            <Button
               size='icon'
               variant='secondary'
               className='border border-primary-100 h-[41px] w-[41px]'
-              onClick={openProjectPage}
-              initial={{ x: -20, scale: 0 }}
-              animate={{ x: 0, scale: 1 }}
-              exit={{
-                opacity: 0,
-                transition: { delay: 0, duration: 0.2 },
-              }}
-              transition={{
-                delay: 0.1,
-              }}
             >
-              <LinkIcon className='w-4 h-4' />
-            </MotionButton>
-            <MotionButton
-              size='icon'
-              variant='secondary'
-              className='border border-primary-100 h-[41px] w-[41px]'
-              onClick={copyProjectUrlToClipboard}
-              initial={{ x: -20, scale: 0 }}
-              exit={{
-                opacity: 0,
-                transition: { duration: 0.2 },
-              }}
-              animate={{ x: 0, scale: 1 }}
-            >
-              <Clipboard className='w-4 h-4' />
-            </MotionButton>
-          </div>
-        )}
+              <Settings2 className='w-4 h-4' />
+            </Button>
+          </Link>
+          <Button
+            size='icon'
+            variant='secondary'
+            className='border border-primary-100 h-[41px] w-[41px]'
+            onClick={openProjectPage}
+          >
+            <LinkIcon className='w-4 h-4' />
+          </Button>
+          <Button
+            size='icon'
+            variant='secondary'
+            className='border border-primary-100 h-[41px] w-[41px]'
+            onClick={copyProjectUrlToClipboard}
+          >
+            <Clipboard className='w-4 h-4' />
+          </Button>
+        </div>
       </AnimatePresence>
       <motion.div
         className={cn('flex items-center gap-3 p-2 pr-3 rounded-lg border', {
