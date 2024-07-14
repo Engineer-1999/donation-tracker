@@ -7,7 +7,7 @@ import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
-import ChangeImageButton from './changeImageButton';
+import ChangeImageButton from './imageControls';
 import ImageInput from './imageInput';
 
 type ProjectImageProps = {
