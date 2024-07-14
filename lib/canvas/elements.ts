@@ -24,7 +24,7 @@ export function createScalableProgressBar(
     const scalableProgressBar = new fabric.Group([group], {
       ...options,
       left: 50,
-      top: 630,
+      top: 60,
       width,
       height,
     });
