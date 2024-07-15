@@ -3,6 +3,7 @@ import { downloadImage } from '@/lib/canvas';
 import { Project } from '@/lib/supabase/schema';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { updateCanvas } from '../actions';
 import ColorControls from './controls/color';
 import ImageControls from './controls/image';
 import ProgressBarControls from './controls/progressBar';
@@ -40,7 +41,11 @@ const Sidebar = ({
 
   const onSave = async () => {
     setSaving(true);
-
+    if (!canvas) return;
+    const canvasJson = canvas?.toJSON();
+    await updateCanvas(project.id, {
+      canvas: canvasJson,
+    });
     setSaving(false);
   };
 

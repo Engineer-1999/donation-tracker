@@ -20,3 +20,18 @@ export const updateProject = async (projectId: string, data: any) => {
 
   return project;
 };
+
+export const updateCanvas = async (projectId: string, data: any) => {
+  const supabaseClient = await createClerkSupabaseServerClient();
+
+  const { error } = await supabaseClient
+    .from('projects')
+    .update(data)
+    .eq('id', projectId);
+
+  if (error) {
+    throw error;
+  }
+
+  return { error };
+};

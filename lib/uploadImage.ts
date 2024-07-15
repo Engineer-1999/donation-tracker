@@ -1,7 +1,7 @@
 import { supabaseClient } from './supabase/client';
 import { STORAGE_URL } from './supabase/constants';
 
-export const uploadImageToStorage = async (file: File, id: string) => {
+export const uploadImageToStorage = async (file: File | Blob, id: string) => {
   const imageName = `${id}-${Date.now()}`;
 
   const { error, data } = await supabaseClient.storage
@@ -42,6 +42,20 @@ export const deleteImageFromStorage = async (imageUrl: string) => {
     console.log(error);
     return;
   }
+};
+
+export const dataURLToBlob = (dataURL: string) => {
+  const parts = dataURL.split(',');
+  const contentType = parts[0].split(':')[1];
+  const base64Data = parts[1];
+
+  const byteString = atob(base64Data);
+  const byteNumbers = new Array(byteString.length);
+  for (let i = 0; i < byteString.length; i++) {
+    byteNumbers[i] = byteString.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  return new Blob([byteArray], { type: contentType });
 };
 
 export const deleteImage = async (id: string, imageUrl: string) => {

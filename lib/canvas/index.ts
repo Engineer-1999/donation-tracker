@@ -53,17 +53,23 @@ export const handleCanvasMouseDown = ({
   }
 };
 
-export const downloadImage = (
-  canvas: fabric.Canvas,
-  fileName = 'image.png',
-  format = 'png',
-) => {
+export const renderCanvasToImage = (canvas: fabric.Canvas, format = 'png') => {
   canvas.renderAll();
 
   const dataURL = canvas.toDataURL({
     format,
     quality: 1,
   });
+
+  return dataURL;
+};
+
+export const downloadImage = (
+  canvas: fabric.Canvas,
+  fileName = 'image.png',
+  format = 'png',
+) => {
+  const dataURL = renderCanvasToImage(canvas, format);
 
   const link = document.createElement('a');
   link.download = fileName;

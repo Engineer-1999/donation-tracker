@@ -2,7 +2,6 @@
 
 import { initializeFabric, setBackgroundImage } from '@/lib/canvas';
 import { extractColors } from '@/lib/canvas/colors';
-import { ShapeVariant } from '@/lib/canvas/types';
 import { Project } from '@/lib/supabase/schema';
 import { cn } from '@/lib/utils';
 import { fabric } from 'fabric-pure-browser';
@@ -42,7 +41,6 @@ const Editor = ({ project }: EditorProps) => {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
-  const selectedShapeRef = useRef<ShapeVariant | null>(null);
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -64,6 +62,17 @@ const Editor = ({ project }: EditorProps) => {
       canvas?.dispose();
     };
   }, []);
+
+  useEffect(() => {
+    const canvas = fabricRef.current;
+    if (!canvas || !isCanvasReady) return;
+
+    if (project.canvas) {
+      canvas.loadFromJSON(project.canvas, () => {
+        setIsCanvasReady(true);
+      });
+    }
+  }, [isCanvasReady, project.canvas]);
 
   useEffect(() => {
     const canvas = fabricRef.current;

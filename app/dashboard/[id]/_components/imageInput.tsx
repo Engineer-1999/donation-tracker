@@ -25,6 +25,7 @@ const ImageInput = ({
 
   const handleFileInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log(file);
     if (!file) return;
 
     setIsLoading(true);
