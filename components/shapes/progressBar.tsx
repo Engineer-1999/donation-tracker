@@ -27,7 +27,7 @@ export function createProgressBarShapeSVG({
   width = 600,
 }: ProgressBarShapeProps): string {
   const height = width / 10;
-  const padding = 8;
+  const padding = 5;
   const innerWidth = width - padding * 2;
   const innerHeight = height - padding * 2;
   const progressWidth = innerWidth * (progress / 100);

@@ -1,41 +1,36 @@
 import ImageInput from '@/app/dashboard/[id]/_components/imageInput';
-import {
-  deleteImage,
-  updateImageUrlInProject,
-  uploadImageToStorage,
-} from '@/lib/uploadImage';
+import { Project } from '@/lib/supabase/schema';
+import { deleteImage, uploadImageToStorage } from '@/lib/uploadImage';
 import { FileImage } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent } from 'react';
+import { useCanvas } from '../../hooks/CanvasContext';
 import ControlsSectionWrapper from './wrapper';
 
 type ImageControlsProps = {
-  projectId: string;
-  imageUrl: string;
+  project: Project;
   isLoadingImage: boolean;
-  setImageUrl: React.Dispatch<React.SetStateAction<string>>;
   setIsLoadingImage: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const ImageControls = ({
-  projectId,
-  imageUrl,
+  project,
   isLoadingImage,
-  setImageUrl,
   setIsLoadingImage,
 }: ImageControlsProps) => {
   const router = useRouter();
+
+  const { backgroundImageUrl, setBackgroundImageUrl } = useCanvas();
 
   const handleFileInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setIsLoadingImage(true);
-    const imageUrl = await uploadImageToStorage(file, projectId);
+    const imageUrl = await uploadImageToStorage(file, project.id);
     if (!imageUrl) return;
 
-    setImageUrl(imageUrl);
-    await updateImageUrlInProject(projectId, imageUrl);
+    setBackgroundImageUrl(imageUrl);
 
     setIsLoadingImage(false);
 
@@ -43,8 +38,8 @@ const ImageControls = ({
   };
 
   const handleDeleteImage = async () => {
-    await deleteImage(projectId, imageUrl);
-    setImageUrl('');
+    await deleteImage(project.id, backgroundImageUrl);
+    setBackgroundImageUrl('');
     router.refresh();
   };
 
@@ -53,7 +48,7 @@ const ImageControls = ({
       title='إعدادات الصورة'
       icon={<FileImage className='w-4 h-4' />}
     >
-      {!!imageUrl ? (
+      {!!backgroundImageUrl ? (
         <div className='flex items-center gap-2 w-full'>
           <div className='w-full flex items-center gap-2'>
             <input
@@ -78,8 +73,8 @@ const ImageControls = ({
         </div>
       ) : (
         <ImageInput
-          id={projectId}
-          setImageUrl={setImageUrl}
+          id={project.id}
+          setImageUrl={setBackgroundImageUrl}
           isLoading={isLoadingImage}
           setIsLoading={setIsLoadingImage}
         />

@@ -4,45 +4,35 @@ import { Project } from '@/lib/supabase/schema';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { updateCanvas } from '../actions';
+import { useCanvas } from '../hooks/CanvasContext';
 import ColorControls from './controls/color';
 import ImageControls from './controls/image';
 import ProgressBarControls from './controls/progressBar';
+import Separator from './separator';
 
 type SidebarProps = {
   project: Project;
   className?: string;
-  imageUrl: string;
-  setImageUrl: React.Dispatch<React.SetStateAction<string>>;
-  canvas: fabric.Canvas | null;
   isLoadingImage: boolean;
   setIsLoadingImage: React.Dispatch<React.SetStateAction<boolean>>;
-  dominantColors: string[];
-  projectColor: string;
-  setProjectColor: React.Dispatch<React.SetStateAction<string>>;
-  setIsColorPicking: React.Dispatch<React.SetStateAction<boolean>>;
-  isColorPicking: boolean;
 };
 
 const Sidebar = ({
-  canvas,
   project,
   className,
-  imageUrl,
-  setImageUrl,
   isLoadingImage,
   setIsLoadingImage,
-  dominantColors,
-  projectColor,
-  setProjectColor,
-  setIsColorPicking,
-  isColorPicking,
 }: SidebarProps) => {
   const [saving, setSaving] = useState(false);
+
+  const {
+    fabricRef: { current: canvas },
+  } = useCanvas();
 
   const onSave = async () => {
     setSaving(true);
     if (!canvas) return;
-    const canvasJson = canvas?.toJSON();
+    const canvasJson = canvas?.toJSON(['data']);
     await updateCanvas(project.id, {
       canvas: canvasJson,
     });
@@ -58,7 +48,7 @@ const Sidebar = ({
   return (
     <div
       className={cn(
-        'w-full h-full flex flex-col items-center gap-4 border-l border-neutral-200 bg-white',
+        'w-full h-full flex flex-col items-center gap-4 border-l border-neutral-200 bg-white overflow-auto',
         className,
       )}
     >
@@ -67,30 +57,17 @@ const Sidebar = ({
       </div>
       <section className='flex flex-col w-full'>
         <ImageControls
-          projectId={project.id}
-          setImageUrl={setImageUrl}
-          imageUrl={imageUrl}
+          project={project}
           isLoadingImage={isLoadingImage}
           setIsLoadingImage={setIsLoadingImage}
         />
-        <div className='w-full h-px bg-neutral-200 my-6' />
-        <ColorControls
-          projectId={project.id}
-          projectColor={projectColor}
-          isColorPicking={isColorPicking}
-          setProjectColor={setProjectColor}
-          setIsColorPicking={setIsColorPicking}
-          dominantColors={dominantColors}
-        />
-        <div className='w-full h-px bg-neutral-200 my-6' />
-
-        <ProgressBarControls
-          canvas={canvas}
-          projectColor={projectColor}
-          project={project}
-        />
-        <div className='w-full h-px bg-neutral-200 my-6' />
+        <Separator />
+        <ColorControls />
+        <Separator />
+        <ProgressBarControls />
+        <Separator />
       </section>
+
       <div className='flex items-center gap-4 w-full p-2'>
         <Button
           variant='default'

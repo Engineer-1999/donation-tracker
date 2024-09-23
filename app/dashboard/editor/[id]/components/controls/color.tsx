@@ -1,51 +1,16 @@
-import { supabaseClient } from '@/lib/supabase/client';
-import { useClickAway, useDebounce } from '@uidotdev/usehooks';
+import { updateColor } from '@/lib/canvas';
+import { useClickAway } from '@uidotdev/usehooks';
 import { motion } from 'framer-motion';
 import { Palette } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
+import { useCanvas } from '../../hooks/CanvasContext';
 import ControlsSectionWrapper from './wrapper';
 
-type ColorControlsProps = {
-  projectId: string;
-  projectColor: string;
-  isColorPicking: boolean;
-  setProjectColor: React.Dispatch<React.SetStateAction<string>>;
-  setIsColorPicking: React.Dispatch<React.SetStateAction<boolean>>;
-  dominantColors: string[];
-};
-
-const ColorControls = ({
-  projectId,
-  projectColor,
-  isColorPicking,
-  setProjectColor,
-  setIsColorPicking,
-  dominantColors,
-}: ColorControlsProps) => {
-  const router = useRouter();
+const ColorControls = () => {
   const [showColorPicker, setShowColorPicker] = useState(false);
 
-  const debouncedColor = useDebounce(projectColor, 500);
-
-  useEffect(() => {
-    const updateColorInSupabase = async (color: string) => {
-      const { error } = await supabaseClient
-        .from('projects')
-        .update({ color })
-        .match({ id: projectId });
-
-      if (error) {
-        console.log(error);
-      }
-    };
-
-    if (debouncedColor) {
-      updateColorInSupabase(debouncedColor);
-      router.refresh();
-    }
-  }, [debouncedColor, projectId, router]);
+  const { fabricRef, dominantColors, projectColor, setProjectColor } = useCanvas();
 
   const ref = useClickAway<HTMLDivElement>(() => {
     setShowColorPicker(false);
@@ -53,12 +18,11 @@ const ColorControls = ({
 
   const handleColorChange = (color: string) => {
     setProjectColor(color);
+    updateColor({ canvas: fabricRef.current, color });
   };
+
   return (
-    <ControlsSectionWrapper
-      title='إعدادات الالوان'
-      icon={<Palette className='w-4 h-4' />}
-    >
+    <ControlsSectionWrapper title='إعدادات الالوان' icon={<Palette className='w-4 h-4' />}>
       <div className='relative'>
         <div className='grid grid-cols-6 items-center gap-2'>
           <button
@@ -66,25 +30,8 @@ const ColorControls = ({
             onClick={() => setShowColorPicker(true)}
             disabled={showColorPicker}
           >
-            <div
-              className='w-full h-full rounded-lg'
-              style={{ backgroundColor: projectColor }}
-            />
+            <div className='w-full h-full rounded-lg' style={{ backgroundColor: projectColor }} />
           </button>
-          {/* <Button
-            variant='outline'
-            size='sm'
-            className={cn(
-              'aspect-square gap-2 disabled:opacity-100 !cursor-pointer',
-              {
-                'bg-gray-100 text-gray-700': isColorPicking,
-              },
-            )}
-            disabled={showColorPicker}
-            onClick={() => setIsColorPicking(!isColorPicking)}
-          >
-            <Pipette className='w-4 h-4' />
-          </Button> */}
           {dominantColors.map((color, index) => (
             <motion.button
               key={index + color}
@@ -100,10 +47,7 @@ const ColorControls = ({
         {showColorPicker && (
           <div ref={ref} className='absolute right-0 top-11 z-50'>
             <div className='border border-gray-200 rounded-lg p-1 mb-4 w-fit relative text-gray-700 bg-white'>
-              <HexColorPicker
-                color={projectColor}
-                onChange={handleColorChange}
-              />
+              <HexColorPicker color={projectColor} onChange={handleColorChange} />
               <HexColorInput
                 color={projectColor}
                 onChange={handleColorChange}
