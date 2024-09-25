@@ -1,18 +1,18 @@
 import { createProgressBarShapeSVG, ProgressBarShapeProps } from '@/components/shapes/progressBar';
 import { fabric } from 'fabric-pure-browser';
 import { v4 as uuidv4 } from 'uuid';
+import { removeElement } from '.';
 
 type ElementType = 'text' | 'progressBar';
 
-export function createElement({
-  canvas,
-  type,
-  options,
-}: {
+type CreateElementProps = {
   canvas: fabric.Canvas;
   type: ElementType;
-  options: (fabric.IObjectOptions & ProgressBarShapeProps) | fabric.ITextOptions;
-}) {
+  options: fabric.ITextOptions | (ProgressBarShapeProps & fabric.IObjectOptions);
+};
+
+export const createElement = ({ canvas, type, options }: CreateElementProps) => {
+  console.log('creating element', type);
   switch (type) {
     case 'text':
       return createTextElement(canvas, options);
@@ -21,7 +21,7 @@ export function createElement({
     default:
       throw new Error(`Unsupported element type: ${options.type}`);
   }
-}
+};
 
 function createTextElement(canvas: fabric.Canvas, options: fabric.ITextOptions) {
   const { text, type, ...textOptions } = options;
@@ -46,32 +46,42 @@ export function createScalableProgressBar(
   canvas: fabric.Canvas,
   options: ProgressBarShapeProps & fabric.IObjectOptions,
 ) {
+  removeElement({ canvas, type: 'progressBar' });
+
   const { width = 600, height = 70, left = 50, top = 60, ...restOptions } = options;
   const svgString = createProgressBarShapeSVG({ width, ...restOptions });
 
-  fabric.loadSVGFromString(svgString, (objects, svgOptions) => {
-    if (objects.length === 0) {
-      throw new Error('Failed to load SVG');
-    }
+  return new Promise<fabric.Group>((resolve, reject) => {
+    fabric.loadSVGFromString(svgString, (objects, svgOptions) => {
+      if (objects.length === 0) {
+        reject(new Error('Failed to load SVG'));
+        return;
+      }
 
-    const group = fabric.util.groupSVGElements(objects, svgOptions);
-    const scalableProgressBar = createProgressBarGroup(group, {
-      width,
-      height,
-      left,
-      top,
-      data: { type: 'progressBar' },
-      ...options,
-      type: 'group',
+      const group = fabric.util.groupSVGElements(objects, svgOptions);
+      const scalableProgressBar = createProgressBarGroup(group, {
+        width,
+        height,
+        left,
+        top,
+        data: { type: 'progressBar', shape: options.shape, color: options.color },
+        ...options,
+        type: 'group',
+      });
+
+      disableMiddleControls(scalableProgressBar);
+      canvas.add(scalableProgressBar);
+      canvas.sendToBack(scalableProgressBar);
+      canvas.renderAll();
+      resolve(scalableProgressBar);
     });
-
-    disableMiddleControls(scalableProgressBar);
-    addToCanvas(canvas, scalableProgressBar);
   });
 }
 
 function createProgressBarGroup(group: fabric.Object, options: fabric.IGroupOptions): fabric.Group {
-  return new fabric.Group([group], options);
+  const progressBarGroup = new fabric.Group([group], options);
+  progressBarGroup.setCoords(); // Ensure coordinates are set
+  return progressBarGroup;
 }
 
 function disableMiddleControls(object: fabric.Object) {

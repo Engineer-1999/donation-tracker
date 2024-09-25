@@ -1,4 +1,5 @@
 import { fetchProjectById } from '@/app/dashboard/[id]/actions';
+import { notFound } from 'next/navigation';
 import ClientCanvas from './_components/ClientCanvas';
 
 const PublishedProjectPage = async ({ params }: { params: { id: string } }) => {
@@ -10,6 +11,10 @@ const PublishedProjectPage = async ({ params }: { params: { id: string } }) => {
 
   if (!project) {
     return <div>Loading...</div>;
+  }
+
+  if (!project.is_published) {
+    return notFound();
   }
 
   return (

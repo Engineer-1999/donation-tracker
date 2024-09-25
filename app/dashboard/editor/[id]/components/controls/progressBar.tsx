@@ -5,7 +5,7 @@ import { createElement } from '@/lib/canvas/elements';
 import { formatCurrency, formatPercentage } from '@/lib/formatNumbers';
 import { fabric } from 'fabric-pure-browser';
 import { Circle, CircleDot, Spline, Square } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useCanvas } from '../../hooks/CanvasContext';
 import ControlsSectionWrapper from './wrapper';
 
@@ -13,14 +13,16 @@ interface ProgressBarControlsProps {
   percentage?: number;
   progressAmount?: number;
   totalAmount?: number;
+  projectColor?: string;
 }
 
 const ProgressBarControls: React.FC<ProgressBarControlsProps> = ({
   percentage = 60,
   progressAmount = 1000,
   totalAmount = 300000,
+  projectColor,
 }) => {
-  const { projectColor, fabricRef } = useCanvas();
+  const { fabricRef } = useCanvas();
   const canvas = fabricRef.current;
 
   const [showPercentage, setShowPercentage] = useState(() =>
@@ -33,35 +35,36 @@ const ProgressBarControls: React.FC<ProgressBarControlsProps> = ({
     hasElement({ canvas, type: 'totalAmountText' }),
   );
 
+  const progressBarRef = useRef<fabric.Object | null>(null);
+
   const createProgressBar = useCallback(
-    (shape: 'sharp' | 'circular' | 'rounded') => {
+    async (shape: 'sharp' | 'circular' | 'rounded') => {
       if (!canvas) return;
 
-      const existingProgressBar = getElementByType({ canvas, type: 'progressBar' });
-      if (existingProgressBar) {
-        removeElement({ canvas, type: 'progressBar' });
+      if (progressBarRef.current) {
+        canvas.remove(progressBarRef.current);
       }
-      createElement({
-        canvas,
-        type: 'progressBar',
-        options: {
-          shape,
+
+      try {
+        const newProgressBar = await createElement({
+          canvas,
           type: 'progressBar',
-          color: projectColor,
-          progress: percentage,
-          width: existingProgressBar?.width ?? 600,
-          left: existingProgressBar?.left ?? 50,
-          top: existingProgressBar?.top ?? 50,
-          scaleX: existingProgressBar?.scaleX ?? 1,
-          scaleY: existingProgressBar?.scaleY ?? 1,
-        },
-      });
+          options: {
+            shape,
+            color: projectColor,
+            progress: percentage,
+            width: 600,
+            left: 50,
+            top: 50,
+          },
+        });
 
-      const progressBar = getElementByType({ canvas, type: 'progressBar' });
-
-      if (progressBar) {
-        canvas.sendToBack(progressBar);
-        canvas.renderAll();
+        if (newProgressBar) {
+          progressBarRef.current = newProgressBar;
+          canvas.renderAll();
+        }
+      } catch (error) {
+        console.error('Error creating progress bar:', error);
       }
     },
     [canvas, projectColor, percentage],
@@ -131,18 +134,6 @@ const ProgressBarControls: React.FC<ProgressBarControlsProps> = ({
   useEffect(() => {
     createOrUpdateTextElement('totalAmountText', formatCurrency(totalAmount), showTotalAmount);
   }, [canvas, totalAmount, projectColor, showTotalAmount, createOrUpdateTextElement]);
-
-  useEffect(() => {
-    if (!canvas) return;
-    const progressBar = getElementByType({
-      canvas,
-      type: 'progressBar',
-    }) as fabric.Object;
-    if (progressBar) {
-      canvas.sendToBack(progressBar);
-      canvas.renderAll();
-    }
-  }, [canvas]);
 
   return (
     <ControlsSectionWrapper title='إعدادات شريط التقدم' icon={<CircleDot className='w-4 h-4' />}>

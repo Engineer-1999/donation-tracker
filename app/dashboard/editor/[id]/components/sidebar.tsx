@@ -1,8 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { downloadImage } from '@/lib/canvas';
+import { extractColors } from '@/lib/canvas/colors';
 import { Project } from '@/lib/supabase/schema';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { ArrowLeftIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { updateCanvas } from '../actions';
 import { useCanvas } from '../hooks/CanvasContext';
 import ColorControls from './controls/color';
@@ -17,17 +20,24 @@ type SidebarProps = {
   setIsLoadingImage: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Sidebar = ({
-  project,
-  className,
-  isLoadingImage,
-  setIsLoadingImage,
-}: SidebarProps) => {
+const Sidebar = ({ project, className, isLoadingImage, setIsLoadingImage }: SidebarProps) => {
   const [saving, setSaving] = useState(false);
+  const [dominantColors, setDominantColors] = useState<string[]>([]);
+  const [projectColor, setProjectColor] = useState<string>('#000');
 
   const {
     fabricRef: { current: canvas },
   } = useCanvas();
+
+  useEffect(() => {
+    const img = document.createElement('img');
+    img.src = project.image_url;
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const colors = extractColors(img);
+      if (colors) setDominantColors(colors);
+    };
+  }, [project.image_url, setDominantColors]);
 
   const onSave = async () => {
     setSaving(true);
@@ -52,8 +62,13 @@ const Sidebar = ({
         className,
       )}
     >
-      <div className='p-4 border-b border-neutral-200 w-full text-center'>
+      <div className='p-4 border-b border-neutral-200 w-full flex justify-between items-center'>
         <h1>لوحة التحكم</h1>
+        <Link href={`/dashboard/${project.id}`}>
+          <Button variant='outline' size='icon' className='flex items-center gap-2'>
+            <ArrowLeftIcon className='w-4 h-4' />
+          </Button>
+        </Link>
       </div>
       <section className='flex flex-col w-full'>
         <ImageControls
@@ -62,19 +77,18 @@ const Sidebar = ({
           setIsLoadingImage={setIsLoadingImage}
         />
         <Separator />
-        <ColorControls />
+        <ColorControls
+          dominantColors={dominantColors}
+          projectColor={projectColor}
+          setProjectColor={setProjectColor}
+        />
         <Separator />
-        <ProgressBarControls />
+        <ProgressBarControls projectColor={projectColor} />
         <Separator />
       </section>
 
       <div className='flex items-center gap-4 w-full p-2'>
-        <Button
-          variant='default'
-          onClick={onSave}
-          isLoading={saving}
-          className='w-full'
-        >
+        <Button variant='default' onClick={onSave} isLoading={saving} className='w-full'>
           حفظ
         </Button>
         <Button variant='outline' className='w-full' onClick={onDownload}>

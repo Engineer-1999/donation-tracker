@@ -8,17 +8,16 @@ import TransactionsTable from './_components/transactionsTable';
 import { fetchProjectById, fetchTransactionsByProjectId } from './actions';
 
 const page = async ({ params }: { params: { id: string } }) => {
-  const { project, error: projectFetchingError } = await fetchProjectById(
-    params.id,
-  );
+  const { project, error: projectFetchingError } = await fetchProjectById(params.id);
 
   if (projectFetchingError || !project) {
     console.log(projectFetchingError);
     return notFound();
   }
 
-  const { transactions, error: transactionsFetchingError } =
-    await fetchTransactionsByProjectId(project.id);
+  const { transactions, error: transactionsFetchingError } = await fetchTransactionsByProjectId(
+    project.id,
+  );
 
   if (transactionsFetchingError) {
     console.log(transactionsFetchingError);
@@ -39,9 +38,7 @@ const page = async ({ params }: { params: { id: string } }) => {
     {
       title: 'نسبة الإنجاز',
       icon: <CircleDot className='h-5 w-5' />,
-      value: formatPercentage(
-        parseFloat(project.progress) / parseFloat(project.target_goal),
-      ),
+      value: formatPercentage(parseFloat(project.progress) / parseFloat(project.target_goal)),
     },
   ];
 
@@ -50,18 +47,12 @@ const page = async ({ params }: { params: { id: string } }) => {
       <ProjectHeader project={project} />
       <section className='py-5 flex flex-wrap items-center justify-between gap-2 md:gap-5'>
         {statusCards.map((card) => (
-          <StatusCard
-            key={card.title}
-            title={card.title}
-            icon={card.icon}
-            value={card.value}
-          />
+          <StatusCard key={card.title} title={card.title} icon={card.icon} value={card.value} />
         ))}
       </section>
 
       <section className='py-5 space-y-5'>
         <AddTransactionForm project={project} />
-        {/* @ts-expect-error Server Component */}
         <TransactionsTable transactions={transactions} />
       </section>
     </section>

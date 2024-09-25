@@ -1,28 +1,23 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { FullscreenIcon } from 'lucide-react';
+import { FullscreenIcon, MinimizeIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type ControlsProps = {
-  className?: string;
+  containerRef: React.RefObject<HTMLDivElement>;
 };
 
-const Controls = ({ className }: ControlsProps) => {
+const Controls: React.FC<ControlsProps> = ({ containerRef }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch((err) => {
-        console.error(
-          `Error attempting to enable full-screen mode: ${err.message}`,
-        );
+      containerRef.current?.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
       });
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+      document.exitFullscreen();
     }
   };
 
@@ -38,21 +33,15 @@ const Controls = ({ className }: ControlsProps) => {
     };
   }, []);
 
-  if (isFullScreen) {
-    return null;
-  }
-
   return (
-    <div
-      className={cn(
-        'absolute top-4 right-4 flex items-center gap-2 flex-col',
-        className,
-      )}
+    <Button
+      variant='ghost'
+      size='icon'
+      onClick={toggleFullScreen}
+      className='absolute top-4 right-4 bg-white bg-opacity-50 hover:bg-opacity-75 z-10'
     >
-      <Button variant='default' size='icon' onClick={toggleFullScreen}>
-        <FullscreenIcon className='h-6 w-6' />
-      </Button>
-    </div>
+      {isFullScreen ? <MinimizeIcon className='h-6 w-6' /> : <FullscreenIcon className='h-6 w-6' />}
+    </Button>
   );
 };
 

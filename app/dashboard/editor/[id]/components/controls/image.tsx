@@ -3,8 +3,7 @@ import { Project } from '@/lib/supabase/schema';
 import { deleteImage, uploadImageToStorage } from '@/lib/uploadImage';
 import { FileImage } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { ChangeEvent } from 'react';
-import { useCanvas } from '../../hooks/CanvasContext';
+import { ChangeEvent, useState } from 'react';
 import ControlsSectionWrapper from './wrapper';
 
 type ImageControlsProps = {
@@ -13,14 +12,10 @@ type ImageControlsProps = {
   setIsLoadingImage: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ImageControls = ({
-  project,
-  isLoadingImage,
-  setIsLoadingImage,
-}: ImageControlsProps) => {
+const ImageControls = ({ project, isLoadingImage, setIsLoadingImage }: ImageControlsProps) => {
   const router = useRouter();
 
-  const { backgroundImageUrl, setBackgroundImageUrl } = useCanvas();
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState(project.image_url);
 
   const handleFileInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,10 +39,7 @@ const ImageControls = ({
   };
 
   return (
-    <ControlsSectionWrapper
-      title='إعدادات الصورة'
-      icon={<FileImage className='w-4 h-4' />}
-    >
+    <ControlsSectionWrapper title='إعدادات الصورة' icon={<FileImage className='w-4 h-4' />}>
       {!!backgroundImageUrl ? (
         <div className='flex items-center gap-2 w-full'>
           <div className='w-full flex items-center gap-2'>

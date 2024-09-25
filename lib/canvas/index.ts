@@ -1,4 +1,6 @@
 import { fabric } from 'fabric-pure-browser';
+import { createScalableProgressBar } from './elements';
+import { ProgressBarVariant } from './types';
 
 // initialize fabric canvas
 export const initializeFabric = ({
@@ -35,12 +37,12 @@ export const setBackgroundImage = (canvas: fabric.Canvas, imageUrl: string) => {
   );
 };
 
-export const renderCanvasToImage = (canvas: fabric.Canvas, format = 'png') => {
+export const renderCanvasToImage = (canvas: fabric.Canvas, format = 'png', quality = 1) => {
   canvas.renderAll();
 
   const dataURL = canvas.toDataURL({
     format,
-    quality: 1,
+    quality,
   });
 
   return dataURL;
@@ -60,7 +62,7 @@ export const handleKeyDown = (e: KeyboardEvent, canvas: fabric.Canvas) => {
   if (e.key === 'Backspace' || e.key === 'Delete') {
     const activeObjects = canvas.getActiveObjects();
     if (activeObjects.length > 0) {
-      activeObjects.forEach((obj) => canvas.remove(obj));
+      activeObjects.forEach((obj) => removeElement({ canvas, type: obj.data?.type }));
       canvas.discardActiveObject().renderAll();
     }
   }
@@ -176,9 +178,12 @@ export const getElementByType = ({
 
 export const removeElement = ({ canvas, type }: { canvas: fabric.Canvas | null; type: string }) => {
   if (!canvas) return;
+  console.log('removing element', type);
 
   const element = getElementByType({ canvas, type });
+
   if (element) {
+    canvas.discardActiveObject();
     canvas.remove(element);
     canvas.renderAll();
   }
@@ -194,4 +199,56 @@ export const updateColor = ({ canvas, color }: { canvas: fabric.Canvas | null; c
   });
 
   canvas.renderAll();
+};
+
+export const updateText = ({
+  canvas,
+  element,
+  text,
+}: {
+  canvas: fabric.Canvas | null;
+  element: fabric.Text;
+  text: string;
+}) => {
+  if (!canvas) return;
+
+  if (element) {
+    element.set('text', text);
+    canvas.bringToFront(element);
+    canvas.discardActiveObject();
+    canvas.renderAll();
+  }
+};
+
+export const updateProgressBar = async ({
+  canvas,
+  element,
+  options,
+}: {
+  canvas: fabric.Canvas | null;
+  element: fabric.Object;
+  options: {
+    progress?: number;
+    color?: string;
+    shape?: ProgressBarVariant;
+  };
+}) => {
+  if (!canvas) return;
+  console.log('updating progress bar', options);
+
+  try {
+    await createScalableProgressBar(canvas, {
+      type: 'progressBar',
+      width: element?.width ?? 600,
+      left: element?.left ?? 50,
+      top: element?.top ?? 50,
+      scaleX: element?.scaleX ?? 1,
+      scaleY: element?.scaleY ?? 1,
+      progress: options.progress ?? element.data?.progress ?? 0,
+      color: options.color ?? element.data?.color ?? '#000',
+      shape: options.shape ?? element.data?.shape ?? 'rounded',
+    });
+  } catch (error) {
+    console.error('Error updating progress bar:', error);
+  }
 };

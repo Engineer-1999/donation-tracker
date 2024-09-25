@@ -7,10 +7,15 @@ import { HexColorInput, HexColorPicker } from 'react-colorful';
 import { useCanvas } from '../../hooks/CanvasContext';
 import ControlsSectionWrapper from './wrapper';
 
-const ColorControls = () => {
+type ColorControlsProps = {
+  dominantColors: string[];
+  projectColor: string;
+  setProjectColor: (color: string) => void;
+};
+const ColorControls = ({ dominantColors, projectColor, setProjectColor }: ColorControlsProps) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
 
-  const { fabricRef, dominantColors, projectColor, setProjectColor } = useCanvas();
+  const { fabricRef } = useCanvas();
 
   const ref = useClickAway<HTMLDivElement>(() => {
     setShowColorPicker(false);

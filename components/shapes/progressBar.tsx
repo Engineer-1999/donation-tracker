@@ -30,7 +30,7 @@ export function createProgressBarShapeSVG({
   const padding = 5;
   const innerWidth = width - padding * 2;
   const innerHeight = height - padding * 2;
-  const progressWidth = innerWidth * (progress / 100);
+  const progressWidth = Math.min(innerWidth, innerWidth * (progress / 100));
   const outerShapeClass = getShapeClass(shape, height);
   const innerShapeClass = getShapeClass(shape, innerHeight);
 
