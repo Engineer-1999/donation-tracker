@@ -1,4 +1,4 @@
-export function formatPercentage(value: number, locale: string = 'ar-SA') {
+export function formatPercentage(value: number, locale: string = 'en-US') {
   return new Intl.NumberFormat(locale, {
     style: 'percent',
     minimumFractionDigits: 1,
@@ -6,12 +6,14 @@ export function formatPercentage(value: number, locale: string = 'ar-SA') {
 }
 
 export function formatCurrency(value: number, locale: string = 'ar-SA') {
-  return new Intl.NumberFormat(locale, {
+  const formattedValue = new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'SAR',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
+
+  return fixNumbers(formattedValue);
 }
 
 export function formatDate(value: string, locale: string = 'ar-SA') {

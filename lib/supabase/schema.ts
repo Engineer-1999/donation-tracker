@@ -20,7 +20,8 @@ export type Project = {
   color: string;
   is_published: boolean;
   user_id: string;
-  settings: ProjectSettings;
+  output_image: string;
+  canvas?: JSON;
 };
 
 export type Transaction = {

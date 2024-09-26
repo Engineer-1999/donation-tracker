@@ -1,13 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { fixNumbers } from '@/lib/formatNumbers';
 import { supabaseClient } from '@/lib/supabase/client';
@@ -39,25 +33,22 @@ const AddTransactionForm = ({ project }: { project: Project }) => {
     },
   });
 
-  const handleAnanName = () => {
+  const handleAnanName = (e: React.MouseEvent) => {
+    e.preventDefault();
     form.setValue('donatorName', 'فاعل خير');
     form.setFocus('donationAmount');
   };
 
   const onSubmit = async (values: AddTransactionFormData) => {
-    const transformedDonationAmount = parseFloat(
-      fixNumbers(values.donationAmount),
-    );
+    const transformedDonationAmount = parseFloat(fixNumbers(values.donationAmount));
 
-    const { error: updateTransactionError } = await supabaseClient
-      .from('transactions')
-      .insert([
-        {
-          project_id: project.id,
-          name: values.donatorName,
-          amount: transformedDonationAmount,
-        },
-      ]);
+    const { error: updateTransactionError } = await supabaseClient.from('transactions').insert([
+      {
+        project_id: project.id,
+        name: values.donatorName,
+        amount: transformedDonationAmount,
+      },
+    ]);
 
     if (updateTransactionError) {
       console.log(updateTransactionError);
@@ -90,12 +81,7 @@ const AddTransactionForm = ({ project }: { project: Project }) => {
             <FormItem className='w-full'>
               <FormControl>
                 <div className='relative'>
-                  <Input
-                    type='text'
-                    dir='rtl'
-                    placeholder='اسم المتبرع'
-                    {...field}
-                  />
+                  <Input type='text' dir='rtl' placeholder='اسم المتبرع' {...field} />
                   <Button
                     size='sm'
                     variant='secondary'
@@ -116,12 +102,7 @@ const AddTransactionForm = ({ project }: { project: Project }) => {
           render={({ field }) => (
             <FormItem className='w-full md:w-auto'>
               <FormControl>
-                <Input
-                  type='text'
-                  dir='rtl'
-                  placeholder='مبلغ التبرع'
-                  {...field}
-                />
+                <Input type='text' dir='rtl' placeholder='مبلغ التبرع' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

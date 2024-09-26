@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
-import CreateNewProjectCard from './_components/createNewProjectCard';
-import ProjectCard from './_components/projectCard';
+import CreateNewProjectCard from '../_components/createNewProjectCard';
+import ProjectCard from '../_components/projectCard';
 import { fetchProjects } from './actions';
 
 const DashboardPage = async () => {

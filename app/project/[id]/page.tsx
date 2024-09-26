@@ -1,18 +1,25 @@
 import { fetchProjectById } from '@/app/dashboard/[id]/actions';
 import { notFound } from 'next/navigation';
-import Output from '../_components/output';
-import { updateProject } from './actions';
+import ClientCanvas from './_components/ClientCanvas';
 
 const PublishedProjectPage = async ({ params }: { params: { id: string } }) => {
   const { project, error } = await fetchProjectById(params.id);
 
-  if (error || !project || !project.is_published) {
-    notFound();
+  if (error) {
+    return <div>Error loading project: {error.message}</div>;
+  }
+
+  if (!project) {
+    return <div>Loading...</div>;
+  }
+
+  if (!project.is_published) {
+    return notFound();
   }
 
   return (
     <div className='relative w-screen h-screen flex items-center justify-center overflow-hidden bg-black'>
-      <Output project={project} updateProject={updateProject} />
+      <ClientCanvas project={project} />
     </div>
   );
 };

@@ -76,12 +76,14 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           )}
         </span>
       </div>
-      <div className='flex items-center justify-between'>
+      <div className='flex'>
         <Progress
           value={parseFloat(project.progress)}
           target={parseFloat(project.target_goal)}
           color={project.color}
-          className='rounded-none h-5 w-full border-none'
+          shape='square'
+          size={800}
+          className='h-5 w-full border-none'
         />
       </div>
     </section>

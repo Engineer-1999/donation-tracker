@@ -22,7 +22,11 @@ export const columns: ColumnDef<Transaction>[] = [
     header: '',
     cell: ({ getValue }) => {
       const id = getValue() as string;
-      return <DeleteTransactionButton id={id} />;
+      return (
+        <div className='flex justify-end'>
+          <DeleteTransactionButton id={id} />
+        </div>
+      );
     },
   },
 ];

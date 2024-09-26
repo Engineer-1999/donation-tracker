@@ -22,8 +22,8 @@ const Header = () => {
   const fullName = user?.firstName + ' ' + user?.lastName;
 
   return (
-    <header className='border-b border-gray-200'>
-      <div className='container flex items-center justify-between pl-5 pr-6 py-4'>
+    <header className='border-b border-gray-200 py-3 h-16'>
+      <div className='container flex items-center justify-between pl-5 pr-6'>
         <Link href='/dashboard'>
           <Logo className='h-6 w-auto text-primary-900 hover:text-primary-800 transition-colors duration-200' />
         </Link>
