@@ -12,14 +12,7 @@ const DashboardProjectPageLoading = () => {
         <Skeleton className='flex-1 h-20 rounded-lg' />
         <Skeleton className='flex-1 h-20 rounded-lg' />
       </section>
-      <section className=' grid grid-cols-1 md:grid-cols-2 gap-8'>
-        <section className='py-5'>
-          <Skeleton className='w-full h-96 rounded-lg' />
-        </section>
-        <section className='py-5'>
-          <Skeleton className='w-full h-96 rounded-lg' />
-        </section>
-      </section>
+      <Skeleton className='w-full h-96 rounded-lg mt-8' />
     </section>
   );
 };

@@ -7,7 +7,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <Header />
-      <CanvasContextProvider>{children}</CanvasContextProvider>
+      <CanvasContextProvider>
+        <div className='relative'>{children}</div>
+      </CanvasContextProvider>
     </div>
   );
 };

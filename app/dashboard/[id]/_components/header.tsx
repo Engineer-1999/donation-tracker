@@ -25,13 +25,13 @@ const ProjectHeader = ({ project }: ProjectHeaderProps) => {
     return { status, error };
   };
 
-  console.log(project);
+  const canvas = project.canvas as unknown as fabric.Canvas;
 
   return (
     <header className='py-5 flex items-center justify-between flex-wrap gap-4'>
       <DashboardBreadcrumb title={project.name || 'المشروع'} />
       <ProjectContorls
-        hasAnImage={!!project.image_url}
+        hasAnImage={!!canvas?.backgroundImage}
         isPublishedProject={project.is_published}
         onPublishChange={updateProjectPublished}
         id={project.id}

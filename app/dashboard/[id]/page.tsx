@@ -1,10 +1,10 @@
 import { formatCurrency, formatPercentage } from '@/lib/formatNumbers';
 import { CircleDot, CirclePlus, HandCoins } from 'lucide-react';
 import { notFound } from 'next/navigation';
-import AddTransactionForm from './_components/addTransactionForm';
 import ProjectHeader from './_components/header';
 import StatusCard from './_components/statusCard';
-import TransactionsTable from './_components/transactionsTable';
+import AddTransactionForm from './_components/transactionsTable/addTransactionForm';
+import TransactionsTable from './_components/transactionsTable/transactionsTable';
 import { fetchProjectById, fetchTransactionsByProjectId } from './actions';
 
 const page = async ({ params }: { params: { id: string } }) => {

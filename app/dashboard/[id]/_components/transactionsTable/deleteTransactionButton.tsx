@@ -44,17 +44,13 @@ const DeleteTransactionButton = ({ id }: DeleteTransactionButtonProps) => {
       return;
     }
 
-    const { error } = await supabaseClient
-      .from('transactions')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
 
     if (error) {
       console.log(error);
     }
 
-    let updatedProgress =
-      parseFloat(project.progress) - parseFloat(transaction.amount);
+    let updatedProgress = parseFloat(project.progress) - parseFloat(transaction.amount);
 
     if (updatedProgress < 0) {
       updatedProgress = 0;
@@ -88,9 +84,7 @@ const DeleteTransactionButton = ({ id }: DeleteTransactionButtonProps) => {
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>هل انت متأكد من رغبتك في حذف هذا التبرع؟</DrawerTitle>
-          <DrawerDescription>
-            لا يمكن استرجاع هذا التبرع بعد حذفه
-          </DrawerDescription>
+          <DrawerDescription>لا يمكن استرجاع هذا التبرع بعد حذفه</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
           <DrawerClose>
