@@ -296,48 +296,42 @@ export const setupKeyboardEvents = (canvas: fabric.Canvas, isDesignMode: boolean
   return () => window.removeEventListener('keydown', keyDownHandler);
 };
 
-export const updateCanvasElements = (
-  canvas: fabric.Canvas,
-  project: Project,
-  isDesignMode: boolean,
-) => {
-  if (!isDesignMode) {
-    const progressBarElement = getElementByType({ canvas, type: 'progressBar' }) as fabric.Object;
-    if (progressBarElement) {
-      updateProgressBar({
-        canvas,
-        element: progressBarElement,
-        options: {
-          progress: 100 * (parseFloat(project.progress) / parseFloat(project.target_goal)),
-        },
-      });
-    }
-
-    const elements = [
-      {
-        type: 'percentageText',
-        text: formatPercentage(parseFloat(project.progress) / parseFloat(project.target_goal)),
+export const updateCanvasElements = (canvas: fabric.Canvas, project: Project) => {
+  const progressBarElement = getElementByType({ canvas, type: 'progressBar' }) as fabric.Object;
+  if (progressBarElement) {
+    updateProgressBar({
+      canvas,
+      element: progressBarElement,
+      options: {
+        progress: 100 * (parseFloat(project.progress) / parseFloat(project.target_goal)),
       },
-      { type: 'totalAmountText', text: formatCurrency(parseFloat(project.target_goal)) },
-      { type: 'progressAmountText', text: formatCurrency(parseFloat(project.progress)) },
-    ];
-
-    elements.forEach(({ type, text }) => {
-      const element = getElementByType({ canvas, type }) as fabric.Text;
-      if (element) {
-        updateText({ canvas, element, text });
-      }
     });
-
-    // Make canvas uneditable when not in design mode
-    canvas.selection = false;
-    canvas.forEachObject((obj) => {
-      obj.selectable = false;
-      obj.evented = false;
-    });
-
-    canvas.renderAll();
   }
+
+  const elements = [
+    {
+      type: 'percentageText',
+      text: formatPercentage(parseFloat(project.progress) / parseFloat(project.target_goal)),
+    },
+    { type: 'totalAmountText', text: formatCurrency(parseFloat(project.target_goal)) },
+    { type: 'progressAmountText', text: formatCurrency(parseFloat(project.progress)) },
+  ];
+
+  elements.forEach(({ type, text }) => {
+    const element = getElementByType({ canvas, type }) as fabric.Text;
+    if (element) {
+      updateText({ canvas, element, text });
+    }
+  });
+
+  // Make canvas uneditable when not in design mode
+  canvas.selection = false;
+  canvas.forEachObject((obj) => {
+    obj.selectable = false;
+    obj.evented = false;
+  });
+
+  canvas.renderAll();
 };
 
 export const saveCanvas = async (canvas: fabric.Canvas, projectId: string) => {

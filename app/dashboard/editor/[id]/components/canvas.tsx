@@ -8,6 +8,7 @@ import {
 } from '@/lib/canvas';
 import { Project } from '@/lib/supabase/schema';
 import { cn } from '@/lib/utils';
+import { fabric } from 'fabric-pure-browser';
 import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useCanvas } from '../hooks/CanvasContext';
@@ -40,10 +41,26 @@ const Canvas = ({ project, isDesignMode = false, ...props }: CanvasProps) => {
     };
   }, [initCanvas]);
 
+  const updateCanvasSize = useCallback((canvas: fabric.Canvas) => {
+    const backgroundImage = canvas.backgroundImage;
+    if (backgroundImage && backgroundImage instanceof fabric.Image) {
+      const width = backgroundImage.width! * backgroundImage.scaleX!;
+      const height = backgroundImage.height! * backgroundImage.scaleY!;
+      console.log('width', width);
+      console.log('height', height);
+
+      canvas.setDimensions({ width, height });
+    }
+  }, []);
+
   const updateCanvas = useCallback(() => {
     if (!fabricRef.current || !isReady) return;
-    updateCanvasElements(fabricRef.current, project, isDesignMode);
-  }, [fabricRef, isReady, project, isDesignMode]);
+
+    updateCanvasSize(fabricRef.current);
+    if (!isDesignMode) {
+      updateCanvasElements(fabricRef.current, project);
+    }
+  }, [fabricRef, isReady, updateCanvasSize, isDesignMode, project]);
 
   useEffect(() => {
     if (!fabricRef.current || !isReady || !project.canvas) return;
