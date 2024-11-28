@@ -66,6 +66,7 @@ export const renderCanvasToImage = (canvas: fabric.Canvas, format = 'png', quali
   const dataURL = canvas.toDataURL({
     format,
     quality,
+    multiplier: window.devicePixelRatio || 1,
   });
 
   return dataURL;

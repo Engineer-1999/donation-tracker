@@ -26,7 +26,17 @@ const Canvas = ({ project, isDesignMode = false, ...props }: CanvasProps) => {
   const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   const initCanvas = useCallback(() => {
-    const canvas = initializeCanvas({ canvasRef, fabricRef, width: 800, height: 800 });
+    const dpr = window.devicePixelRatio || 1;
+    const canvas = initializeCanvas({ canvasRef, fabricRef, width: 800 * dpr, height: 800 * dpr });
+    canvas.setDimensions(
+      {
+        width: 800,
+        height: 600,
+      },
+      {
+        cssOnly: true,
+      },
+    );
     setIsReady(true);
     return canvas;
   }, [fabricRef]);
@@ -44,12 +54,28 @@ const Canvas = ({ project, isDesignMode = false, ...props }: CanvasProps) => {
   const updateCanvasSize = useCallback((canvas: fabric.Canvas) => {
     const backgroundImage = canvas.backgroundImage;
     if (backgroundImage && backgroundImage instanceof fabric.Image) {
-      const width = backgroundImage.width! * backgroundImage.scaleX!;
-      const height = backgroundImage.height! * backgroundImage.scaleY!;
-      console.log('width', width);
-      console.log('height', height);
+      const dpr = window.devicePixelRatio || 1;
+      const width = (backgroundImage.width! * backgroundImage.scaleX!) / dpr;
+      const height = (backgroundImage.height! * backgroundImage.scaleY!) / dpr;
 
-      canvas.setDimensions({ width, height });
+      canvas.setDimensions(
+        {
+          width: width * dpr,
+          height: height * dpr,
+        },
+        {
+          cssOnly: false,
+        },
+      );
+      canvas.setDimensions(
+        {
+          width,
+          height,
+        },
+        {
+          cssOnly: true,
+        },
+      );
     }
   }, []);
 
