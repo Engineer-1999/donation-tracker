@@ -1,40 +1,63 @@
+import { syncCanvasWithDatabase } from '@/app/dashboard/editor/[id]/actions';
+import { formatCurrency, formatPercentage } from '@/lib/formatNumbers';
+import { Project } from '@/lib/supabase/schema';
 import { fabric } from 'fabric-pure-browser';
 import { createScalableProgressBar } from './elements';
 import { ProgressBarVariant } from './types';
 
-// initialize fabric canvas
 export const initializeFabric = ({
   fabricRef,
   canvasRef,
+  width,
+  height,
 }: {
   fabricRef: React.MutableRefObject<fabric.Canvas | null>;
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
+  width: number;
+  height: number;
 }) => {
   const canvas = new fabric.Canvas(canvasRef.current, {
-    width: 800,
-    height: 800,
+    width,
+    height,
   });
 
   fabricRef.current = canvas;
   return canvas;
 };
 
-export const setBackgroundImage = (canvas: fabric.Canvas, imageUrl: string) => {
-  if (!canvas) return;
-  fabric.Image.fromURL(
-    imageUrl,
-    (img) => {
-      img.set({
-        left: 0,
-        top: 0,
-      });
-      img.scaleToWidth(canvas.getWidth());
-      img.scaleToHeight(canvas.getHeight());
+export const initializeCanvas = ({
+  canvasRef,
+  fabricRef,
+  width,
+  height,
+}: {
+  canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
+  fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+  width: number;
+  height: number;
+}) => {
+  const canvas = initializeFabric({ canvasRef, fabricRef, width, height });
+  if (canvas) {
+    setupCanvasEventListeners(canvas);
+  }
+  return canvas;
+};
 
-      canvas.setBackgroundImage(img, () => canvas.renderAll());
-    },
-    { crossOrigin: 'anonymous' },
-  );
+export const updateCanvasSize = ({
+  canvas,
+  width,
+  height,
+}: {
+  canvas: fabric.Canvas;
+  width: number;
+  height: number;
+}) => {
+  if (!canvas) return;
+
+  canvas.setWidth(width);
+  canvas.setHeight(height);
+
+  canvas.renderAll();
 };
 
 export const renderCanvasToImage = (canvas: fabric.Canvas, format = 'png', quality = 1) => {
@@ -43,6 +66,7 @@ export const renderCanvasToImage = (canvas: fabric.Canvas, format = 'png', quali
   const dataURL = canvas.toDataURL({
     format,
     quality,
+    multiplier: window.devicePixelRatio || 1,
   });
 
   return dataURL;
@@ -251,4 +275,68 @@ export const updateProgressBar = async ({
   } catch (error) {
     console.error('Error updating progress bar:', error);
   }
+};
+
+export const loadCanvasFromJSON = (canvas: fabric.Canvas, jsonData: JSON, callback: () => void) => {
+  if (!jsonData) return;
+  try {
+    canvas.loadFromJSON(jsonData, () => {
+      callback();
+    });
+  } catch (error) {
+    console.error('Error loading canvas:', error);
+  }
+};
+
+export const setupKeyboardEvents = (canvas: fabric.Canvas, isDesignMode: boolean) => {
+  if (!isDesignMode) return;
+
+  const keyDownHandler = (e: KeyboardEvent) => handleKeyDown(e, canvas);
+  window.addEventListener('keydown', keyDownHandler);
+
+  return () => window.removeEventListener('keydown', keyDownHandler);
+};
+
+export const updateCanvasElements = (canvas: fabric.Canvas, project: Project) => {
+  const progressBarElement = getElementByType({ canvas, type: 'progressBar' }) as fabric.Object;
+  if (progressBarElement) {
+    updateProgressBar({
+      canvas,
+      element: progressBarElement,
+      options: {
+        progress: 100 * (parseFloat(project.progress) / parseFloat(project.target_goal)),
+      },
+    });
+  }
+
+  const elements = [
+    {
+      type: 'percentageText',
+      text: formatPercentage(parseFloat(project.progress) / parseFloat(project.target_goal)),
+    },
+    { type: 'totalAmountText', text: formatCurrency(parseFloat(project.target_goal)) },
+    { type: 'progressAmountText', text: formatCurrency(parseFloat(project.progress)) },
+  ];
+
+  elements.forEach(({ type, text }) => {
+    const element = getElementByType({ canvas, type }) as fabric.Text;
+    if (element) {
+      updateText({ canvas, element, text });
+    }
+  });
+
+  // Make canvas uneditable when not in design mode
+  canvas.selection = false;
+  canvas.forEachObject((obj) => {
+    obj.selectable = false;
+    obj.evented = false;
+  });
+
+  canvas.renderAll();
+};
+
+export const saveCanvas = async (canvas: fabric.Canvas, projectId: string) => {
+  if (!canvas) return;
+  const canvasJson = canvas.toJSON(['data']);
+  await syncCanvasWithDatabase({ projectId, canvas: canvasJson });
 };

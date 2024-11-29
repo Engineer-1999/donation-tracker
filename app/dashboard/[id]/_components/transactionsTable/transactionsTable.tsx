@@ -11,11 +11,7 @@ const transformData = (transactions: Transaction[]) => {
   }));
 };
 
-const TransactionsTable = async ({
-  transactions,
-}: {
-  transactions: Transaction[] | null;
-}) => {
+const TransactionsTable = async ({ transactions }: { transactions: Transaction[] | null }) => {
   if (!transactions) {
     return null;
   }

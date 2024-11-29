@@ -3,10 +3,10 @@ import { downloadImage } from '@/lib/canvas';
 import { extractColors } from '@/lib/canvas/colors';
 import { Project } from '@/lib/supabase/schema';
 import { cn } from '@/lib/utils';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { updateCanvas } from '../actions';
+import { syncCanvasWithDatabase } from '../actions';
 import { useCanvas } from '../hooks/CanvasContext';
 import ColorControls from './controls/color';
 import ImageControls from './controls/image';
@@ -30,22 +30,27 @@ const Sidebar = ({ project, className, isLoadingImage, setIsLoadingImage }: Side
   } = useCanvas();
 
   useEffect(() => {
+    const canvas = project.canvas as unknown as fabric.Canvas;
+    const backgroundImage = canvas?.backgroundImage;
+
+    if (!backgroundImage) return;
+
     const img = document.createElement('img');
-    img.src = project.image_url;
+    img.src = (backgroundImage as fabric.Object).data;
+    console.log(backgroundImage);
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       const colors = extractColors(img);
       if (colors) setDominantColors(colors);
     };
-  }, [project.image_url, setDominantColors]);
+  }, [project.canvas, setDominantColors]);
 
   const onSave = async () => {
-    setSaving(true);
     if (!canvas) return;
+
+    setSaving(true);
     const canvasJson = canvas?.toJSON(['data']);
-    await updateCanvas(project.id, {
-      canvas: canvasJson,
-    });
+    await syncCanvasWithDatabase({ canvas: canvasJson, projectId: project.id });
     setSaving(false);
   };
 
@@ -58,12 +63,15 @@ const Sidebar = ({ project, className, isLoadingImage, setIsLoadingImage }: Side
   return (
     <div
       className={cn(
-        'w-full h-full flex flex-col items-center gap-4 border-l border-neutral-200 bg-white overflow-auto',
+        'absolute z-50 w-[280px] h-fit rounded-xl flex flex-col items-center justify-between gap-4 border border-neutral-200 bg-white overflow-auto top-[1rem] right-[1rem]',
         className,
       )}
     >
-      <div className='p-4 border-b border-neutral-200 w-full flex justify-between items-center'>
-        <h1>لوحة التحكم</h1>
+      <div className='p-2 border-b border-neutral-200 w-full flex justify-between items-center'>
+        <h1 className='flex items-center gap-2'>
+          <Settings className='w-[18px] h-[18px]' />
+          لوحة التحكم
+        </h1>
         <Link href={`/dashboard/${project.id}`}>
           <Button variant='outline' size='icon' className='flex items-center gap-2'>
             <ArrowLeftIcon className='w-4 h-4' />
@@ -84,17 +92,16 @@ const Sidebar = ({ project, className, isLoadingImage, setIsLoadingImage }: Side
         />
         <Separator />
         <ProgressBarControls projectColor={projectColor} />
-        <Separator />
+        <Separator className='mb-0' />
+        <div className='flex items-center gap-4 w-full p-2'>
+          <Button variant='default' onClick={onSave} isLoading={saving} className='w-full'>
+            حفظ
+          </Button>
+          <Button variant='outline' className='w-full' onClick={onDownload}>
+            تحميل الصورة
+          </Button>
+        </div>
       </section>
-
-      <div className='flex items-center gap-4 w-full p-2'>
-        <Button variant='default' onClick={onSave} isLoading={saving} className='w-full'>
-          حفظ
-        </Button>
-        <Button variant='outline' className='w-full' onClick={onDownload}>
-          تحميل الصورة
-        </Button>
-      </div>
     </div>
   );
 };

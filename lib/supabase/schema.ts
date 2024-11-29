@@ -16,7 +16,6 @@ export type Project = {
   name: string;
   target_goal: string;
   progress: string;
-  image_url: string;
   color: string;
   is_published: boolean;
   user_id: string;

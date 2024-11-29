@@ -4,9 +4,7 @@ import { STORAGE_URL } from './supabase/constants';
 export const uploadImageToStorage = async (file: File | Blob, id: string) => {
   const imageName = `${id}-${Date.now()}`;
 
-  const { error, data } = await supabaseClient.storage
-    .from('images')
-    .upload(imageName, file);
+  const { error, data } = await supabaseClient.storage.from('images').upload(imageName, file);
 
   if (error) {
     console.log(error);
@@ -18,25 +16,9 @@ export const uploadImageToStorage = async (file: File | Blob, id: string) => {
   return STORAGE_URL + imageName;
 };
 
-export const updateImageUrlInProject = async (id: string, imageUrl: string) => {
-  const { error } = await supabaseClient
-    .from('projects')
-    .update({
-      image_url: imageUrl,
-    })
-    .match({ id });
-
-  if (error) {
-    console.log(error);
-    return;
-  }
-};
-
 export const deleteImageFromStorage = async (imageUrl: string) => {
   const imageName = imageUrl.split(STORAGE_URL)[1];
-  const { error } = await supabaseClient.storage
-    .from('images')
-    .remove([imageName]);
+  const { error } = await supabaseClient.storage.from('images').remove([imageName]);
 
   if (error) {
     console.log(error);
@@ -56,16 +38,4 @@ export const dataURLToBlob = (dataURL: string) => {
   }
   const byteArray = new Uint8Array(byteNumbers);
   return new Blob([byteArray], { type: contentType });
-};
-
-export const deleteImage = async (id: string, imageUrl: string) => {
-  const { error } = await supabaseClient
-    .from('projects')
-    .update({ image_url: null })
-    .match({ id });
-
-  if (error) {
-    console.log(error);
-    return;
-  }
 };

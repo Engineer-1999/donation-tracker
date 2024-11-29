@@ -139,25 +139,25 @@ const ProgressBarControls: React.FC<ProgressBarControlsProps> = ({
     <ControlsSectionWrapper title='إعدادات شريط التقدم' icon={<CircleDot className='w-4 h-4' />}>
       <div className='grid grid-cols-3 items-center gap-2 mb-2'>
         <Button variant='outline' className='w-full' onClick={() => createProgressBar('sharp')}>
-          <Square className='w-8 h-8' />
+          <Square className='w-6 h-6' />
         </Button>
         <Button variant='outline' className='w-full' onClick={() => createProgressBar('circular')}>
-          <Circle className='w-8 h-8' />
+          <Circle className='w-6 h-6' />
         </Button>
         <Button variant='outline' className='w-full' onClick={() => createProgressBar('rounded')}>
-          <Spline className='w-8 h-8' />
+          <Spline className='w-6 h-6' />
         </Button>
       </div>
       <div className='flex items-center justify-between gap-2 py-2'>
-        <span>إظهار شريط التقدم</span>
+        <span className='text-sm'>إظهار نسبة التقدم</span>
         <Switch onCheckedChange={setShowPercentage} checked={showPercentage} />
       </div>
       <div className='flex items-center justify-between gap-2 py-2'>
-        <span>إظهار المبلغ المجموع</span>
+        <span className='text-sm'>إظهار المبلغ المجموع</span>
         <Switch onCheckedChange={setShowProgressAmount} checked={showProgressAmount} />
       </div>
       <div className='flex items-center justify-between gap-2 py-2'>
-        <span>إظهار كامل المبلغ المستهدف</span>
+        <span className='text-sm'>إظهار كامل المبلغ المستهدف</span>
         <Switch onCheckedChange={setShowTotalAmount} checked={showTotalAmount} />
       </div>
     </ControlsSectionWrapper>
