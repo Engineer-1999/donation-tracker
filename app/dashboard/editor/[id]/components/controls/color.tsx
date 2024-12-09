@@ -1,4 +1,5 @@
 import { updateColor } from '@/lib/canvas';
+import { supabaseClient } from '@/lib/supabase/client';
 import { useClickAway } from '@uidotdev/usehooks';
 import { motion } from 'framer-motion';
 import { Palette } from 'lucide-react';
@@ -11,8 +12,16 @@ type ColorControlsProps = {
   dominantColors: string[];
   projectColor: string;
   setProjectColor: (color: string) => void;
+  projectId: string;
+  createProgressBar: (shape: 'sharp' | 'circular' | 'rounded', color: string) => void;
 };
-const ColorControls = ({ dominantColors, projectColor, setProjectColor }: ColorControlsProps) => {
+const ColorControls = ({
+  dominantColors,
+  projectColor,
+  setProjectColor,
+  projectId,
+  createProgressBar,
+}: ColorControlsProps) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
 
   const { fabricRef } = useCanvas();
@@ -21,9 +30,24 @@ const ColorControls = ({ dominantColors, projectColor, setProjectColor }: ColorC
     setShowColorPicker(false);
   });
 
-  const handleColorChange = (color: string) => {
+  const handleColorChange = async (color: string) => {
+    const canvas = fabricRef.current;
+    if (!canvas) return;
+
     setProjectColor(color);
-    updateColor({ canvas: fabricRef.current, color });
+    updateColor({ canvas, color });
+
+    const currentProgressBarShape = canvas
+      .getObjects()
+      .find((obj) => obj.data.type === 'progressBar')?.data.shape;
+
+    createProgressBar(currentProgressBarShape, color);
+    await supabaseClient
+      .from('projects')
+      .update({
+        color: color,
+      })
+      .match({ id: projectId });
   };
 
   return (

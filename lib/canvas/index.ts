@@ -217,7 +217,6 @@ export const updateColor = ({ canvas, color }: { canvas: fabric.Canvas | null; c
   if (!canvas) return;
 
   const activeElements = canvas.getActiveObjects();
-  console.log(activeElements);
   activeElements.forEach((element) => {
     element.set('fill', color);
   });
