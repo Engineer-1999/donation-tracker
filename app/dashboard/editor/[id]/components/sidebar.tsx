@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { downloadImage } from '@/lib/canvas';
 import { extractColors } from '@/lib/canvas/colors';
+import { createElement } from '@/lib/canvas/elements';
 import { Project } from '@/lib/supabase/schema';
 import { cn } from '@/lib/utils';
 import { ArrowLeftIcon, Settings } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { syncCanvasWithDatabase } from '../actions';
 import { useCanvas } from '../hooks/CanvasContext';
 import ColorControls from './controls/color';
@@ -23,7 +24,7 @@ type SidebarProps = {
 const Sidebar = ({ project, className, isLoadingImage, setIsLoadingImage }: SidebarProps) => {
   const [saving, setSaving] = useState(false);
   const [dominantColors, setDominantColors] = useState<string[]>([]);
-  const [projectColor, setProjectColor] = useState<string>('#000');
+  const [projectColor, setProjectColor] = useState<string>(project.color ?? '#000');
 
   const {
     fabricRef: { current: canvas },
@@ -60,6 +61,47 @@ const Sidebar = ({ project, className, isLoadingImage, setIsLoadingImage }: Side
     downloadImage(canvas);
   };
 
+  const progressBarRef = useRef<fabric.Object | null>(null);
+
+  const createProgressBar = useCallback(
+    async (shape: 'sharp' | 'circular' | 'rounded', color = projectColor) => {
+      if (!canvas) return;
+      const previousProgressBar = canvas
+        .getObjects()
+        .find((obj) => obj.data.type === 'progressBar') as fabric.Object;
+
+      console.log(previousProgressBar);
+      if (previousProgressBar) {
+        canvas.remove(previousProgressBar);
+      }
+
+      try {
+        const newProgressBar = await createElement({
+          canvas,
+          type: 'progressBar',
+          options: {
+            shape,
+            color,
+            progress: 60,
+            scaleX: previousProgressBar?.scaleX || 1,
+            scaleY: previousProgressBar?.scaleY || 1,
+            width: previousProgressBar?.width || 600,
+            left: previousProgressBar?.left || 50,
+            top: previousProgressBar?.top || 50,
+          },
+        });
+
+        if (newProgressBar) {
+          progressBarRef.current = newProgressBar;
+          canvas.renderAll();
+        }
+      } catch (error) {
+        console.error('Error creating progress bar:', error);
+      }
+    },
+    [canvas, projectColor],
+  );
+
   return (
     <div
       className={cn(
@@ -89,9 +131,11 @@ const Sidebar = ({ project, className, isLoadingImage, setIsLoadingImage }: Side
           dominantColors={dominantColors}
           projectColor={projectColor}
           setProjectColor={setProjectColor}
+          projectId={project.id}
+          createProgressBar={createProgressBar}
         />
         <Separator />
-        <ProgressBarControls projectColor={projectColor} />
+        <ProgressBarControls projectColor={projectColor} createProgressBar={createProgressBar} />
         <Separator className='mb-0' />
         <div className='flex items-center gap-4 w-full p-2'>
           <Button variant='default' onClick={onSave} isLoading={saving} className='w-full'>

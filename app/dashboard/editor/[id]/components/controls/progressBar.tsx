@@ -5,7 +5,7 @@ import { createElement } from '@/lib/canvas/elements';
 import { formatCurrency, formatPercentage } from '@/lib/formatNumbers';
 import { fabric } from 'fabric-pure-browser';
 import { Circle, CircleDot, Spline, Square } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useCanvas } from '../../hooks/CanvasContext';
 import ControlsSectionWrapper from './wrapper';
 
@@ -14,6 +14,7 @@ interface ProgressBarControlsProps {
   progressAmount?: number;
   totalAmount?: number;
   projectColor?: string;
+  createProgressBar: (shape: 'sharp' | 'circular' | 'rounded') => void;
 }
 
 const ProgressBarControls: React.FC<ProgressBarControlsProps> = ({
@@ -21,6 +22,7 @@ const ProgressBarControls: React.FC<ProgressBarControlsProps> = ({
   progressAmount = 1000,
   totalAmount = 300000,
   projectColor,
+  createProgressBar,
 }) => {
   const { fabricRef } = useCanvas();
   const canvas = fabricRef.current;
@@ -33,41 +35,6 @@ const ProgressBarControls: React.FC<ProgressBarControlsProps> = ({
   );
   const [showTotalAmount, setShowTotalAmount] = useState(() =>
     hasElement({ canvas, type: 'totalAmountText' }),
-  );
-
-  const progressBarRef = useRef<fabric.Object | null>(null);
-
-  const createProgressBar = useCallback(
-    async (shape: 'sharp' | 'circular' | 'rounded') => {
-      if (!canvas) return;
-
-      if (progressBarRef.current) {
-        canvas.remove(progressBarRef.current);
-      }
-
-      try {
-        const newProgressBar = await createElement({
-          canvas,
-          type: 'progressBar',
-          options: {
-            shape,
-            color: projectColor,
-            progress: percentage,
-            width: 600,
-            left: 50,
-            top: 50,
-          },
-        });
-
-        if (newProgressBar) {
-          progressBarRef.current = newProgressBar;
-          canvas.renderAll();
-        }
-      } catch (error) {
-        console.error('Error creating progress bar:', error);
-      }
-    },
-    [canvas, projectColor, percentage],
   );
 
   useEffect(() => {
