@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button';
 import { useSignIn } from '@clerk/nextjs';
 import { z } from 'zod';
-
 import {
   Form,
   FormControl,
@@ -20,10 +19,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'ادخل بريدك الالكتروني')
-    .email('هذا البريد غير صالح'),
+  email: z.string().min(1, 'ادخل بريدك الالكتروني').email('هذا البريد غير صالح'),
   password: z.string().min(1, 'ادخل كلمة المرور'),
 });
 
@@ -44,18 +40,10 @@ const LoginPage = () => {
   });
 
   async function onSubmit(values: LoginFormData) {
-    if (!isLoaded) {
-      return;
-    }
+    if (!isLoaded) return;
 
     setLoading(true);
     setError('');
-
-    /**
-     * @todo: handle errors
-     * forgot password
-     * email not verified
-     */
 
     try {
       const signInAttempt = await signIn.create({
@@ -70,7 +58,8 @@ const LoginPage = () => {
         console.log('signInAttempt', signInAttempt);
       }
     } catch (error: any) {
-      setError(generateErrorMessage(error.errors[0].code));
+      const code = error?.errors?.[0]?.code ?? 'unknown_error';
+      setError(generateErrorMessage(code));
       console.error(error);
     } finally {
       setLoading(false);
@@ -81,14 +70,10 @@ const LoginPage = () => {
     <>
       <h1 className='text-2xl font-bold mb-4'>تسجيل الدخول</h1>
       <p className='text-sm text-gray-500'>
-        الدخول إلى منصة سخاء يتيح لك بدء حملات تبرعات وتحديث نسبة الإنجاز
-        تلقائيًا.
+        الدخول إلى منصة سخاء يتيح لك بدء حملات تبرعات وتحديث نسبة الإنجاز تلقائيًا.
       </p>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className='mt-10 space-y-4'
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className='mt-10 space-y-4'>
           <FormField
             control={form.control}
             name='email'
@@ -124,14 +109,9 @@ const LoginPage = () => {
               </FormItem>
             )}
           />
-          {error && <FormMessage>{error}</FormMessage>}
-          <Button
-            type='submit'
-            className='w-full'
-            disabled={loading}
-            isLoading={loading}
-          >
-            تسجيل الدخول
+          {error && <p className='text-sm text-red-500'>{error}</p>}
+          <Button type='submit' className='w-full' disabled={loading}>
+            {loading ? '...جاري الدخول' : 'تسجيل الدخول'}
           </Button>
           <p className='text-sm text-gray-500'>
             ليس لديك حساب؟{' '}
